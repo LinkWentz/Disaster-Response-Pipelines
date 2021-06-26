@@ -2,27 +2,57 @@ import numpy as np
 import pandas as pd
 import sqlite3 as sql
 
-# Import data.
-msgs = pd.read_csv('messages.csv')
-cats = pd.read_csv('categories.csv')
+messages = pd.read_csv('messages.csv')
+categories = pd.read_csv('categories.csv')
 
-cat_msgs = msgs.merge(cats, right_on = 'id', left_on = 'id')
+# Dummy-ify categories.
+def condense_category_string(category_string,
+                             cat_sep = ';',
+                             val_sep = '-'):
+    """This function takes a string like this:
+        'alpha-0;beta-1;charlie-0;delta-1'
+    And converts it to this:
+        'beta;delta'
+    
+    args:
+        category_string - string formatted as above
+    optional args:
+        cat_sep - delimiter between category-value pairs
+            defaults to ';'
+        val_sep - delimiter between category name and value
+            defaults to '-'
+    """
+    # Convert categories into category-value pairs.
+    category_list = category_string.split(cat_sep)
+    labelled_cats = [category.split(val_sep) for category in category_list]
+    # Keep every category which has a value of '1'.
+    dense_cats = [category for category, value in labelled_cats if value == '1']
+    
+    dense_cats_string = cat_sep.join(dense_cats)
+    
+    return dense_cats_string
 
-# Merge tables.
-def extract_correct_cats(categories):
-    categories = categories.split(';')
-    correct_cats = [cat[:-2] for cat in categories if cat[-1] == '1']
-    return ';'.join(correct_cats)
-cat_msgs['categories'] = list(map(extract_correct_cats, cat_msgs.categories))
-cat_msgs = pd.concat([cat_msgs.drop('categories', axis = 1), cat_msgs.categories.str.get_dummies(sep = ';')], axis = 1)
+categories['categories'] = list(map(condense_category_string, 
+                                    categories['categories']))
+dummy_categories = categories.categories.str.get_dummies(sep = ';')
+categories = pd.concat([categories['id'], dummy_categories], axis = 1)
+
+# Merge tables
+messages = messages.merge(categories, on = 'id')
 
 # Remove duplicates.
-cat_msgs['cat_count'] = np.matrix(cat_msgs[list(cat_msgs.columns)[4:]]).sum(axis = 1)
-cat_msgs = cat_msgs.sort_values('cat_count', ascending = False)
-cat_msgs.drop_duplicates(subset = ['message'], inplace = True)
-cat_msgs = cat_msgs.drop('cat_count', axis = 1).sort_values('id')
+# Sort duplicates by amount of categories to ensure that the duplicate with the
+# most categorizations is the one kept.
+category_matrix = np.matrix(messages[list(messages.columns)[4:]])
+cat_count = category_matrix.sum(axis = 1)
+messages['cat_count'] = cat_count
+messages = messages.sort_values('cat_count', ascending = False)
+# Some duplicate messages had different IDs, making this a better approach.
+messages.drop_duplicates(subset = ['message'], inplace = True)
+
+messages = messages.drop('cat_count', axis = 1).sort_values('id')
 
 # Write to SQL database.
-conn = sql.connect('drp.db')
-cat_msgs.to_sql('categorized_messages', conn)
+conn = sql.connect('disaster_messages.db')
+messages.to_sql('categorized_messages', conn)
 conn.close()
