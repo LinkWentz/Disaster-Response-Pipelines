@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 import sqlite3 as sql
 
-messages = pd.read_csv('Datasets/messages.csv')
-categories = pd.read_csv('Datasets/categories.csv')
+messages = pd.read_csv('messages.csv')
+categories = pd.read_csv('categories.csv')
 
 # Dummy-ify categories.
 def condense_category_string(category_string,
