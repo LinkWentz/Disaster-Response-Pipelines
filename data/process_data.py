@@ -3,12 +3,10 @@ import numpy as np
 import pandas as pd
 import sqlite3 as sql
 
-def condense_category_string(category_string,
-                             cat_sep = ';',
-                             val_sep = '-'):
+def condense_category_string(category_string, cat_sep = ';', val_sep = '-'):
     """This function takes a string like this:
         'alpha-0;beta-1;charlie-0;delta-1'
-    And converts it to this:
+    and converts it to this:
         'beta;delta'
     
     args:
@@ -19,10 +17,11 @@ def condense_category_string(category_string,
         val_sep - delimiter between category name and value
             defaults to '-'
     """
-    
+    # Seperate categories and their values.
     category_list = category_string.split(cat_sep)
-    labelled_cats = [category.split(val_sep) for category in category_list]
-    dense_cats = [category for category, value in labelled_cats if value == '1']
+    cat_val_pairs = [category.split(val_sep) for category in category_list]
+    # Rejoin all categories with the value '1'.
+    dense_cats = [category for category, value in cat_val_pairs if value == '1']
     dense_cats_string = cat_sep.join(dense_cats)
     
     return dense_cats_string
@@ -46,21 +45,18 @@ def clean_data(df):
     """Dummy the values in the "categories" column of the provided pandas 
     dataframe and remove all duplicates.
     """
-    df['categories'] = list(map(condense_category_string, 
-                                df['categories']))
+    # Dummy-ify categories.
+    df['categories'] = list(map(condense_category_string, df['categories']))
     dummy_categories = df.categories.str.get_dummies(sep = ';')
-    df = pd.concat([df[df.columns[:4]], dummy_categories], axis = 1)
-    
-    # Sort duplicates by amount of categories to ensure that the duplicate with the
-    # most categorizations is the one kept.
-    category_matrix = np.matrix(df[list(df.columns)[5:]])
-    print(category_matrix)
-    cat_count = category_matrix.sum(axis = 1)
-    df['cat_count'] = cat_count
+    df = pd.concat([df[df.columns[:5]], dummy_categories], axis = 1)
+    # Since the duplicates are removed by message this sorting ensures that the
+    # duplicates with the most columns are preserved.
+    dummy_columns = list(df.columns)[5:]
+    df['cat_count'] = df[dummy_columns].sum(axis = 1)
     df = df.sort_values('cat_count', ascending = False)
-    # Some duplicate messages had different IDs, making this a better approach.
+    # Drop duplicate messages.
     df.drop_duplicates(subset = ['message'], inplace = True)
-
+    # Restore previous state but without duplicates.
     df = df.drop('cat_count', axis = 1).sort_values('id')
     
     return df
