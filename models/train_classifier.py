@@ -17,49 +17,54 @@ from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 
 def load_data(database_filepath):
-    conn = sql.connect('disaster_messages.db')
-    df = pd.read_sql_query('SELECT * FROM categorized_messages', conn)
+    conn = sql.connect(database_filepath)
+    df = pd.read_sql_query('SELECT * FROM categorized_messages LIMIT 2000', conn)
     conn.close()
     
-    return df
+    print(df.columns)
+    X = df['message']
+    Y = df[df.columns[5:]]
+    
+    return X, Y
 
-def tokenize(text):
+def tokenize(string):
     """Returns an iterable of clean tokens made from the provided string.
     """
     lemmer = WordNetLemmatizer()
-    
+    # Normalize string.
     string = string.lower()
-    # Convert any non-alphanumeric character into a single space.
-    string = re.sub('[\']', ' ', string)
-    string = re.sub('[^a-zA-Z0-9]', ' ', string)
-    string = re.sub(' {2,}', ' ', string)
-    # Remove leading and trailing spaces.
-    string = re.sub(' $', '', string)
-    string = re.sub('^ ', '', string)
-    
+    string = re.sub('[\']', ' ', string)# Remove apostrophes
+    string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space
+    string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single
+    string = re.sub('^ ', '', string)# Remove leading space
+    string = re.sub(' $', '', string)# Remove trailing space
+    # Tokenize string.
     tokens = string.split(' ')
-    
     tokens = [word for word in tokens if word not in stopwords]
-    
     tokens = list(map(lemmer.lemmatize, tokens))
     
     return tokens
 
-def build_model():
-    """Constructs model using _ classifier. This model can be used to predict
+def build_model(classifier = DecisionTreeClassifier()):
+    """Constructs model using a classifier. This model can be used to predict
     multi-label output from text data.
+    
+    optional args:
+        classifier - sklearn classifier with multilabel output
+            defaults to DecisionTreeClassifier()
     """
     # Define pipeline.
     pipeline = Pipeline([
         ('feature_extraction', TfidfVectorizer(tokenizer = tokenize)),
-        ('classifier', DecisionTreeClassifier())
+        ('classifier', classifier)
     ])
-    
     # Set up Grid Search Cross Validation.
     param_grid = {
-        'classifier__random_state': [20, 40, 60]
+        'classifier__random_state': [20]
     }
     cv_model = GridSearchCV(pipeline, param_grid)
+    
+    return cv_model
 
 def score(y_true, y_pred):
     """Returns the F1, precision, and recall scores of the predicted labels 
@@ -76,7 +81,6 @@ def score(y_true, y_pred):
     recall = recall_score(y_true, y_pred, average = avg_setting)
     
     return f1, precision, recall
-    
 
 def evaluate_model(model, X_test, Y_test):
     """Evaluates the f1, precision, and recall of the provided model.
@@ -86,13 +90,13 @@ def evaluate_model(model, X_test, Y_test):
         X_test - test data the classifier will predict on
         Y-test - correct labels to which the predictions will be compared
     """
-    preds = cv_model.predict(X_test)
+    preds = model.predict(X_test)
     
     f1, precision, recall = score(Y_test, preds)
     
-    result_message = 'F1 score: {:.2f}\n
-                      Precision: {:.2f}\n
-                      Recall: {:.2f}'
+    result_message = ('F1 score: {:.2f}\n'\
+                      'Precision: {:.2f}\n'\
+                      'Recall: {:.2f}')
     print(result_message.format(f1, precision, recall))
 
 def save_model(model, model_filepath):
@@ -102,7 +106,7 @@ def save_model(model, model_filepath):
         model - sklearn classifier
         model_filepath - path to which the model should be exported
     """
-    pickle.dump(cv_model, open(model_filepath, "wb"))
+    pickle.dump(model, open(model_filepath, "wb"))
 
 def main():
     if len(sys.argv) == 3:

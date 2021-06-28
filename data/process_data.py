@@ -49,7 +49,7 @@ def clean_data(df):
     df['categories'] = list(map(condense_category_string, 
                                 df['categories']))
     dummy_categories = df.categories.str.get_dummies(sep = ';')
-    df = pd.concat([df[4:], dummy_categories], axis = 1)
+    df = pd.concat([df[df.columns[:4]], dummy_categories], axis = 1)
     
     # Sort duplicates by amount of categories to ensure that the duplicate with the
     # most categorizations is the one kept.
