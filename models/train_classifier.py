@@ -17,11 +17,17 @@ from sklearn.pipeline import Pipeline
 from sklearn.tree import DecisionTreeClassifier
 
 def load_data(database_filepath):
+    """This function loads categorized_messages from SQL database and splits the
+    data into X and Y dataframes.
+    
+    args:
+        database_filepath - location of the sql database from which to pull data
+    """
+    # Get data from database.
     conn = sql.connect(database_filepath)
     df = pd.read_sql_query('SELECT * FROM categorized_messages LIMIT 2000', conn)
     conn.close()
-    
-    print(df.columns)
+    # Unpack data.
     X = df['message']
     Y = df[df.columns[5:]]
     
@@ -33,7 +39,7 @@ def tokenize(string):
     lemmer = WordNetLemmatizer()
     # Normalize string.
     string = string.lower()
-    string = re.sub('[\']', ' ', string)# Remove apostrophes
+    string = re.sub('[\']', '', string)# Remove apostrophes
     string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space
     string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single
     string = re.sub('^ ', '', string)# Remove leading space
@@ -53,12 +59,12 @@ def build_model(classifier = DecisionTreeClassifier()):
         classifier - sklearn classifier with multilabel output
             defaults to DecisionTreeClassifier()
     """
-    # Define pipeline.
+    # Define base pipeline.
     pipeline = Pipeline([
         ('feature_extraction', TfidfVectorizer(tokenizer = tokenize)),
         ('classifier', classifier)
     ])
-    # Set up Grid Search Cross Validation.
+    # Set up grid search cross validation.
     param_grid = {
         'classifier__random_state': [20]
     }
@@ -66,16 +72,17 @@ def build_model(classifier = DecisionTreeClassifier()):
     
     return cv_model
 
-def score(y_true, y_pred):
+def score(y_true, y_pred, avg_setting = 'macro'):
     """Returns the F1, precision, and recall scores of the predicted labels 
     compared to the correct labels.
     
     args:
         y-true - correct labels
         t-pred - predicted labels
+    optional args:
+        avg_setting - value for the average parameter of every sklearn scorer.
+            defaults to 'macro'
     """
-    avg_setting = 'weighted'
-    
     f1 = f1_score(y_true, y_pred, average = avg_setting)
     precision = precision_score(y_true, y_pred, average = avg_setting)
     recall = recall_score(y_true, y_pred, average = avg_setting)
@@ -90,10 +97,11 @@ def evaluate_model(model, X_test, Y_test):
         X_test - test data the classifier will predict on
         Y-test - correct labels to which the predictions will be compared
     """
+    # Generate predictions.
     preds = model.predict(X_test)
-    
+    # Score predictions.
     f1, precision, recall = score(Y_test, preds)
-    
+    # Output results.
     result_message = ('F1 score: {:.2f}\n'\
                       'Precision: {:.2f}\n'\
                       'Recall: {:.2f}')
@@ -128,7 +136,6 @@ def main():
         save_model(model, model_filepath)
 
         print('Trained model saved!')
-
     else:
         print('Please provide the filepath of the disaster messages database '\
               'as the first argument and the filepath of the pickle file to '\
