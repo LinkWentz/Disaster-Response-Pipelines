@@ -19,32 +19,38 @@ def condense_category_string(category_string,
         val_sep - delimiter between category name and value
             defaults to '-'
     """
-    # Convert categories into category-value pairs.
+    
     category_list = category_string.split(cat_sep)
     labelled_cats = [category.split(val_sep) for category in category_list]
-    # Keep every category which has a value of '1'.
     dense_cats = [category for category, value in labelled_cats if value == '1']
-    
     dense_cats_string = cat_sep.join(dense_cats)
     
     return dense_cats_string
 
 def load_data(messages_filepath, categories_filepath):
+    """Load messages and their associated category labels from two csv files
+    and merge into a pandas dataframe.
+    
+    args:
+        messages_filepath - path to the messages csv file
+        categories_filepath - path to the categories csv file
+    """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     
-    messages = messages.merge(categories, on = 'id')
+    messages_and_categories = messages.merge(categories, on = 'id')
     
-    return messages
+    return messages_and_categories
 
 def clean_data(df):
-    # Dummy-ify categories.
+    """Dummy the values in the "categories" column of the provided pandas 
+    dataframe and remove all duplicates.
+    """
     df['categories'] = list(map(condense_category_string, 
                                 df['categories']))
     dummy_categories = df.categories.str.get_dummies(sep = ';')
     df = pd.concat([df[4:], dummy_categories], axis = 1)
     
-    # Remove duplicates.
     # Sort duplicates by amount of categories to ensure that the duplicate with the
     # most categorizations is the one kept.
     category_matrix = np.matrix(df[list(df.columns)[5:]])
@@ -52,7 +58,6 @@ def clean_data(df):
     cat_count = category_matrix.sum(axis = 1)
     df['cat_count'] = cat_count
     df = df.sort_values('cat_count', ascending = False)
-
     # Some duplicate messages had different IDs, making this a better approach.
     df.drop_duplicates(subset = ['message'], inplace = True)
 
@@ -61,10 +66,16 @@ def clean_data(df):
     return df
 
 def save_data(df, database_filename):
+    """Save provided pandas dataframe to the specified sql database file.
+    
+    args:
+        df - pandas dataframe to save
+        database_filename - path of the SQL database file to which the dataframe
+        should be saved.
+    """
     conn = sql.connect(database_filename)
     df.to_sql('categorized_messages', conn)
     conn.close()
-
 
 def main():
     if len(sys.argv) == 4:
