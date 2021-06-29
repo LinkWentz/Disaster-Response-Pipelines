@@ -72,20 +72,20 @@ def build_model(classifier = DecisionTreeClassifier()):
     
     return cv_model
 
-def score(y_true, y_pred, avg_setting = 'macro'):
+def score(Y_true, Y_pred, avg_setting = 'macro'):
     """Returns the F1, precision, and recall scores of the predicted labels 
     compared to the correct labels.
     
     args:
-        y-true - correct labels
-        t-pred - predicted labels
+        Y-true - correct labels
+        Y-pred - predicted labels
     optional args:
         avg_setting - value for the average parameter of every sklearn scorer.
             defaults to 'macro'
     """
-    f1 = f1_score(y_true, y_pred, average = avg_setting)
-    precision = precision_score(y_true, y_pred, average = avg_setting)
-    recall = recall_score(y_true, y_pred, average = avg_setting)
+    f1 = f1_score(Y_true, Y_pred, average = avg_setting)
+    precision = precision_score(Y_true, Y_pred, average = avg_setting)
+    recall = recall_score(Y_true, Y_pred, average = avg_setting)
     
     return f1, precision, recall
 
