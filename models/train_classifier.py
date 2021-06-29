@@ -29,7 +29,7 @@ def load_data(database_filepath):
     conn.close()
     # Unpack data.
     X = df['message']
-    Y = df[df.columns[5:]]
+    Y = df[df.columns[2:]]
     
     return X, Y
 
@@ -124,7 +124,7 @@ def main():
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
         
         print('Building model...')
-        model = build_model()
+        model = build_model(selected_classifier)
         
         print('Training model...')
         model.fit(X_train, Y_train)
