@@ -12,6 +12,7 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
     <style>
         td {
             font-family: Arial;
@@ -31,7 +32,6 @@
 </head>
 
 <body>
-
 <nav class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
@@ -54,7 +54,7 @@
         <hr />
       
         <div class="row">
-            <div class="col-lg-12 form-group-lg">
+            <div class="col-6 form-group-lg">
                 <form action="/go" method="get">
                     <input type="text" class="form-control form-control-lg" name="query" placeholder="Enter a message to classify">
                     <div class="col-lg-offset-5">
@@ -62,14 +62,72 @@
                     </div>
                 </form>
             </div>
+            <div class='col-6'>
+                <h1 class="text-center">Result</h1>
+                <table class='text-center outline'>
+                    <tbody>
+                        <tr>
+                            <td class='correct'>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                        </tr>
+                        <tr>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                        </tr>
+                        <tr>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                        </tr>
+                        <tr>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                        </tr>
+                        <tr>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                        </tr>
+                        <tr>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                        </tr>
+                        <tr>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                        </tr>
+                        <tr>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                        </tr>
+                        <tr>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                            <td>lorem</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-
-        {% block message %}
-        {% endblock %}
     </div>
 </div>
 
-<div class="container">
+<!--div class="container">
     {% block content %}
         <div class="page-header">
             <h1 class="text-center">Overview of Training Dataset</h1>
@@ -79,7 +137,7 @@
     {% for id in ids %}
         <div id="{{id}}"></div>
     {% endfor %}
-</div>
+</div-->
 
 <script type="text/javascript">
     const graphs = {{graphJSON | safe}};
@@ -91,3 +149,68 @@
 
 </body>
 </html>
+<!--
+    <div class='row'>
+        <div class='col-3'></div>
+        <div class='col-6'>
+            <h1 class="text-center">Result</h1>
+            <table class='text-center outline'>
+                <tbody>
+                    <tr>
+                        <td class='correct'>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                    </tr>
+                    <tr>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                    </tr>
+                    <tr>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                    </tr>
+                    <tr>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                    </tr>
+                    <tr>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                    </tr>
+                    <tr>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                    </tr>
+                    <tr>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                    </tr>
+                    <tr>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                    </tr>
+                    <tr>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                        <td>lorem</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
