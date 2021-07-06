@@ -6,13 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Disasters</title>
-
+    <!-- Imports -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    
+    <!-- Custom styling -->
     <style>
         td {
             font-family: Arial;
@@ -22,52 +22,49 @@
             border-collapse: separate;
             border: solid #ced4da 1px;
             border-radius: .3rem;
-            height: 100%;
             width: 100%;
+            height: 35vh;
         }
-        .correct {
-            background-color: lightgreen;
+        .textbox {
+            height: 23vh !important;
+            resize: none;
+            overflow: auto;
         }
     </style>
 </head>
 
 <body>
-<nav class="navbar navbar-inverse navbar-fixed-top">
+<nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-fixed-top">
     <div class="container">
-        <div class="navbar-header">
-            <a class="navbar-brand" href="/">Disaster Response Project</a>
-        </div>
-        <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="https://www.udacity.com/">Made with Udacity</a></li>
-                <li><a href="https://github.com/">Contact</a></li>
-            </ul>
-        </div>
+        <a class="navbar-brand" href="/">Disaster Response Project</a>
+        <ul class="navbar-nav">
+            <li class='nav-item'><a class='nav-link' href="https://www.udacity.com/">Made with Udacity</a></li>
+            <li class='nav-item'><a class='nav-link' href="https://github.com/LinkWentz">Contact</a></li>
+        </ul>
     </div>
 </nav>
 
 
 <div class="fluid-jumbotron">
     <div class="container">
-        <h1 class="text-center">Disaster Response Project</h1>
+        <h1 class="text-center" style='padding-top: 2vh'>Disaster Response Project</h1>
         <p class="text-center">Analyzing message data for disaster response</p>
         <hr />
-      
-        <div class="row">
+        <div class="row align-items-center">
             <div class="col-6 form-group-lg">
-                <form action="/go" method="get">
-                    <input type="text" class="form-control form-control-lg" name="query" placeholder="Enter a message to classify">
-                    <div class="col-lg-offset-5">
-                        <button type="submit" class="btn btn-lg btn-success">Classify Message</button>
+                <form action="/" method="get">
+                    <textarea type="text" class="textbox form-control form-control-lg" name="query" placeholder='{{ query }}'></textarea>
+                    <div>
+                        <button type="submit" class="btn btn-md btn-success">Classify Message</button>
                     </div>
                 </form>
             </div>
             <div class='col-6'>
-                <h1 class="text-center">Result</h1>
+                <h3 class="text-center">Result</h3>
                 <table class='text-center outline'>
                     <tbody>
                         <tr>
-                            <td class='correct'>lorem</td>
+                            <td class='alert-success'>lorem</td>
                             <td>lorem</td>
                             <td>lorem</td>
                             <td>lorem</td>
@@ -124,20 +121,18 @@
                 </table>
             </div>
         </div>
+        <hr />
+        <div class='container'>
+            <div class="col-4">
+                {% for id in ids %}
+                    <div id="{{id}}"></div>
+                {% endfor %}
+            </div>
+        </div>
     </div>
 </div>
 
-<!--div class="container">
-    {% block content %}
-        <div class="page-header">
-            <h1 class="text-center">Overview of Training Dataset</h1>
-        </div>
-    {% endblock %}
-
-    {% for id in ids %}
-        <div id="{{id}}"></div>
-    {% endfor %}
-</div-->
+                
 
 <script type="text/javascript">
     const graphs = {{graphJSON | safe}};
@@ -149,68 +144,3 @@
 
 </body>
 </html>
-<!--
-    <div class='row'>
-        <div class='col-3'></div>
-        <div class='col-6'>
-            <h1 class="text-center">Result</h1>
-            <table class='text-center outline'>
-                <tbody>
-                    <tr>
-                        <td class='correct'>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                    </tr>
-                    <tr>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                        <td>lorem</td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>

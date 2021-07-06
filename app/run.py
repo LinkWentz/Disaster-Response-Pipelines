@@ -37,7 +37,10 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/')
 @app.route('/index')
 def index():
-    
+    # save user input in query
+    query = request.args.get('query', '')
+    if query == '':
+        query = 'Enter a message to classify'
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('request').count()['message']
@@ -55,13 +58,12 @@ def index():
             ],
 
             'layout': {
-                'title': 'Distribution of Message Genres',
+                'title': '',
                 'yaxis': {
                     'title': "Count"
                 },
-                'xaxis': {
-                    'title': "Genre"
-                }
+                'width':330,
+                'height':330
             }
         }
     ]
@@ -71,7 +73,7 @@ def index():
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
     
     # render web page with plotly graphs
-    return render_template('master.html', ids=ids, graphJSON=graphJSON)
+    return render_template('master.html', ids=ids, query=query, graphJSON=graphJSON)
 
 
 # web page that handles user query and displays model results
