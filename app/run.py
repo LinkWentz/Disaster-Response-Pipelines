@@ -39,8 +39,6 @@ model = joblib.load("../models/classifier.pkl")
 def index():
     # save user input in query
     query = request.args.get('query', '')
-    if query == '':
-        query = 'Enter a message to classify'
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
     genre_counts = df.groupby('request').count()['message']

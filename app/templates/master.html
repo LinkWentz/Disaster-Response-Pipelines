@@ -53,7 +53,11 @@
         <div class="row align-items-center">
             <div class="col-6 form-group-lg">
                 <form action="/" method="get">
-                    <textarea type="text" class="textbox form-control form-control-lg" name="query" placeholder='{{ query }}'></textarea>
+                    {% if query == '' %}
+                        <textarea type="text" class="textbox form-control form-control-lg" name="query" placeholder='Enter a message to classify'></textarea>
+                    {% else %}
+                        <textarea type="text" class="textbox form-control form-control-lg" name="query" placeholder='{{ query }}'></textarea>
+                    {% endif %}
                     <div>
                         <button type="submit" class="btn btn-md btn-success">Classify Message</button>
                     </div>
