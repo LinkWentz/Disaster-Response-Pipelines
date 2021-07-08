@@ -35,6 +35,8 @@ def title(text):
 # load data
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('categorized_messages', engine)
+
+# Get category names and convert them to title case
 category_names = [title(category) for category in df.columns[3:]]
 # load model
 model = joblib.load("../models/classifier.pkl")
@@ -44,15 +46,15 @@ model = joblib.load("../models/classifier.pkl")
 @app.route('/')
 @app.route('/index')
 def index():
-    
-    category_table = []
     # save user input in query
     query = request.args.get('query', '')
     if query != '':
+        # Get the predictions for each category
         category_labels = model.predict([query])[0]
-        
+        # Associate the predictions with the category names
         category_list = list(zip(category_names, 
                                  category_labels))
+        # Reshape list into table
         category_table = []
         cats_per_row = 3
         for i in np.arange(0, 36, cats_per_row):
@@ -88,7 +90,8 @@ def index():
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
     
     # render web page with plotly graphs
-    return render_template('master.html', ids=ids, query=query, graphJSON=graphJSON, category_table=category_table)
+    return render_template('master.html', ids=ids, query=query, 
+                           graphJSON=graphJSON, category_table=category_table)
 
 def main():
     app.run(host='0.0.0.0', port=3001, debug=True)
