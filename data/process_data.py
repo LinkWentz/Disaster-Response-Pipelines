@@ -50,11 +50,11 @@ def clean_data(df):
     # Dummy-ify categories.
     df['categories'] = list(map(condense_category_string, df['categories']))
     dummy_categories = df.categories.str.get_dummies(sep = ';')
-    df = pd.concat([df[df.columns[:3]], dummy_categories], axis = 1)
+    df = pd.concat([df[df.columns[:5]], dummy_categories], axis = 1)
     df = df.drop('categories', axis = 1)
     # Since the duplicates are removed by message this sorting ensures that the
     # duplicates with the most columns are preserved.
-    dummy_columns = list(df.columns)[2:]
+    dummy_columns = list(df.columns)[4:]
     df['cat_count'] = df[dummy_columns].sum(axis = 1)
     df = df.sort_values('cat_count', ascending = False)
     # Drop duplicate messages.
