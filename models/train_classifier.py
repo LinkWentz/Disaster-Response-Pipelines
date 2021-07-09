@@ -27,9 +27,10 @@ def load_data(database_filepath):
     conn = sql.connect(database_filepath)
     df = pd.read_sql_query('SELECT * FROM categorized_messages LIMIT 2000', conn)
     conn.close()
+    df.drop('index', axis = 1, inplace = True)
     # Unpack data.
     X = df['message']
-    Y = df[df.columns[4:]]
+    Y = df[df.columns[6:]]
     
     return X, Y
 

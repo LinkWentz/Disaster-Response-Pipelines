@@ -1,3 +1,4 @@
+import chardet
 import sys
 import numpy as np
 import pandas as pd
@@ -43,18 +44,28 @@ def load_data(messages_filepath, categories_filepath):
 
 def clean_data(df):
     """Dummy the values in the "categories" column of the provided pandas 
-    dataframe and remove all duplicates.
+    dataframe, find the original language of each message, and remove all 
+    duplicates.
     """
-    # Remove unused columns.
-    df = df.drop(['original', 'genre'], axis = 1)
+    # Create original language column
+    def detect_language(text):
+        if pd.notnull(text):
+            return chardet.detect(text.encode()).get('language')
+        else:
+            return np.nan
+    df['original_language'] = list(map(detect_language,
+                                       df['original']))
+    # Reorder columns
+    df = df[['id', 'message', 'original', 'original_language', 'genre', 'categories']]
     # Dummy-ify categories.
     df['categories'] = list(map(condense_category_string, df['categories']))
     dummy_categories = df.categories.str.get_dummies(sep = ';')
-    df = pd.concat([df[df.columns[:5]], dummy_categories], axis = 1)
+    df = pd.concat([df[df.columns[:6]], dummy_categories], axis = 1)
     df = df.drop('categories', axis = 1)
     # Since the duplicates are removed by message this sorting ensures that the
     # duplicates with the most columns are preserved.
-    dummy_columns = list(df.columns)[4:]
+    dummy_columns = list(df.columns)[5:]
+    print(dummy_columns)
     df['cat_count'] = df[dummy_columns].sum(axis = 1)
     df = df.sort_values('cat_count', ascending = False)
     # Drop duplicate messages.

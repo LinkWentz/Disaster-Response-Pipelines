@@ -37,7 +37,7 @@ engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('categorized_messages', engine)
 
 # Get category names and convert them to title case
-category_names = [title(category) for category in df.columns[3:]]
+category_names = [title(category) for category in df.columns[6:]]
 # load model
 model = joblib.load("../models/classifier.pkl")
 
@@ -59,8 +59,9 @@ def index():
     for i in np.arange(0, 36, cats_per_row):
         category_table.append(category_list[i:i+cats_per_row])
     # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals 
-    genre_counts = df.groupby('request').count()['message']
+    # TODO: Below is an example - modify to extract data for your own visuals
+    print(df)
+    genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
