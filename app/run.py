@@ -48,17 +48,16 @@ model = joblib.load("../models/classifier.pkl")
 def index():
     # save user input in query
     query = request.args.get('query', '')
-    if query != '':
-        # Get the predictions for each category
-        category_labels = model.predict([query])[0]
-        # Associate the predictions with the category names
-        category_list = list(zip(category_names, 
-                                 category_labels))
-        # Reshape list into table
-        category_table = []
-        cats_per_row = 3
-        for i in np.arange(0, 36, cats_per_row):
-            category_table.append(category_list[i:i+cats_per_row])
+    # Get the predictions for each category
+    category_labels = model.predict([query])[0]
+    # Associate the predictions with the category names
+    category_list = list(zip(category_names, 
+                             category_labels))
+    # Reshape list into table
+    category_table = []
+    cats_per_row = 3
+    for i in np.arange(0, 36, cats_per_row):
+        category_table.append(category_list[i:i+cats_per_row])
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals 
     genre_counts = df.groupby('request').count()['message']
