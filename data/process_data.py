@@ -2,7 +2,11 @@ import chardet
 import sys
 import numpy as np
 import pandas as pd
+import re
 import sqlite3 as sql
+from sklearn.feature_extraction.text import CountVectorizer
+from nltk.corpus import stopwords
+stopwords = set(stopwords.words('english'))
 
 def condense_category_string(category_string, cat_sep = ';', val_sep = '-'):
     """This function takes a string like this:
@@ -67,7 +71,29 @@ def clean_data(df):
     
     return df
 
-def save_data(df, database_filename):
+def bow_transform(df):
+    def tokenize(string):
+        """Returns an iterable of clean tokens made from the provided string.
+        """
+        # Normalize string.
+        string = string.lower()
+        string = re.sub('[\']', '', string)# Remove apostrophes
+        string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space
+        string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single
+        string = re.sub('^ ', '', string)# Remove leading space
+        string = re.sub(' $', '', string)# Remove trailing space
+        # Tokenize string.
+        tokens = string.split(' ')
+        tokens = [word for word in tokens if word not in stopwords]
+
+        return tokens
+    vectorizer = CountVectorizer(tokenizer = tokenize, max_features = 1500)
+    bow = vectorizer.fit_transform(df['message'])
+    bow = pd.DataFrame(bow.todense(), columns=vectorizer.get_feature_names())
+    
+    return bow
+
+def save_data(df, table_name, database_filename):
     """Save provided pandas dataframe to the specified sql database file.
     
     args:
@@ -76,7 +102,7 @@ def save_data(df, database_filename):
         should be saved.
     """
     conn = sql.connect(database_filename)
-    df.to_sql('categorized_messages', conn)
+    df.to_sql(table_name, conn)
     conn.close()
 
 def main():
@@ -89,10 +115,12 @@ def main():
         df = load_data(messages_filepath, categories_filepath)
 
         print('Cleaning data...')
-        df = clean_data(df)
+        clean_df = clean_data(df)
+        bow_df = bow_transform(df)
         
         print('Saving data...\n    DATABASE: {}'.format(database_filepath))
-        save_data(df, database_filepath)
+        save_data(clean_df, 'categorized_messages', database_filepath)
+        save_data(bow_df, 'messages_bag_of_words', database_filepath)
         
         print('Cleaned data saved to database!')
     

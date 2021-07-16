@@ -59,30 +59,10 @@ def index():
     for i in np.arange(0, 36, cats_per_row):
         category_table.append(category_list[i:i+cats_per_row])
     # Extract data needed for visuals
-    genre_counts = df.groupby('genre').count()['message']
-    genre_labels = list(genre_counts.index)
-    
     cat_count_counts = df.groupby('cat_count').count()['message']
     cat_count_labels = list(np.arange(0, 10))
     # Create visuals
     graphs = [
-        {
-            'data': [
-                Bar(
-                    x=genre_labels,
-                    y=genre_counts
-                )
-            ],
-
-            'layout': {
-                'title': '',
-                'yaxis': {
-                    'title': "Count"
-                },
-                'width':330,
-                'height':330
-            }
-        },
         {
             'data': [
                 Bar(
