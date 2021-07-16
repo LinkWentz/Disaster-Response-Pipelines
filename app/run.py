@@ -37,7 +37,7 @@ engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('categorized_messages', engine)
 
 # Get category names and convert them to title case
-category_names = [title(category) for category in df.columns[6:]]
+category_names = [title(category) for category in df.columns[5:]]
 # load model
 model = joblib.load("../models/classifier.pkl")
 
@@ -60,9 +60,13 @@ def index():
         category_table.append(category_list[i:i+cats_per_row])
     # extract data needed for visuals
     # TODO: Below is an example - modify to extract data for your own visuals
-    print(df)
     genre_counts = df.groupby('genre').count()['message']
     genre_names = list(genre_counts.index)
+    
+    ol_counts = df.groupby('original_language').count()['message']
+    ol_names = list(ol_counts.index)
+    
+    print(df['original_language'])
     # create visuals
     # TODO: Below is an example - modify to create your own visuals
     graphs = [
@@ -78,6 +82,23 @@ def index():
                 'title': '',
                 'yaxis': {
                     'title': "Count"
+                },
+                'width':330,
+                'height':330
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=ol_names,
+                    y=ol_counts
+                )
+            ],
+
+            'layout': {
+                'title': '',
+                'yaxis': {
+                    'title': "Original Language Distribution"
                 },
                 'width':330,
                 'height':330
