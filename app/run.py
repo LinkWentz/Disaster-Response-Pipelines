@@ -36,44 +36,40 @@ def title(text):
 engine = create_engine('sqlite:///../data/DisasterResponse.db')
 df = pd.read_sql_table('categorized_messages', engine)
 
-# Get category names and convert them to title case
-category_names = [title(category) for category in df.columns[5:]]
+# Get category labels and convert them to title case
+category_labels = [title(category) for category in df.columns[5:]]
 # load model
 model = joblib.load("../models/classifier.pkl")
 
 
-# index webpage displays cool visuals and receives user input text for model
+# Index webpage displays cool visuals and receives user input text for model
 @app.route('/')
 @app.route('/index')
 def index():
-    # save user input in query
+    # Save user input in query
     query = request.args.get('query', '')
     # Get the predictions for each category
     category_labels = model.predict([query])[0]
-    # Associate the predictions with the category names
-    category_list = list(zip(category_names, 
+    # Associate the predictions with the category labels
+    category_list = list(zip(category_labels, 
                              category_labels))
     # Reshape list into table
     category_table = []
     cats_per_row = 3
     for i in np.arange(0, 36, cats_per_row):
         category_table.append(category_list[i:i+cats_per_row])
-    # extract data needed for visuals
-    # TODO: Below is an example - modify to extract data for your own visuals
+    # Extract data needed for visuals
     genre_counts = df.groupby('genre').count()['message']
-    genre_names = list(genre_counts.index)
+    genre_labels = list(genre_counts.index)
     
-    ol_counts = df.groupby('original_language').count()['message']
-    ol_names = list(ol_counts.index)
-    
-    print(df['original_language'])
-    # create visuals
-    # TODO: Below is an example - modify to create your own visuals
+    cat_count_counts = df.groupby('cat_count').count()['message']
+    cat_count_labels = list(np.arange(0, 10))
+    # Create visuals
     graphs = [
         {
             'data': [
                 Bar(
-                    x=genre_names,
+                    x=genre_labels,
                     y=genre_counts
                 )
             ],
@@ -90,15 +86,15 @@ def index():
         {
             'data': [
                 Bar(
-                    x=ol_names,
-                    y=ol_counts
+                    x=cat_count_labels,
+                    y=cat_count_counts
                 )
             ],
 
             'layout': {
                 'title': '',
                 'yaxis': {
-                    'title': "Original Language Distribution"
+                    'title': "Distribution of Amount of Categories"
                 },
                 'width':330,
                 'height':330
