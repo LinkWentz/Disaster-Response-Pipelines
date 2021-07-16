@@ -47,23 +47,23 @@ def clean_data(df):
     dataframe, find the original language of each message, and remove all 
     duplicates.
     """
-    # Reorder columns
-    df = df[['id', 'message', 'original', 'genre', 'categories']]
     # Dummy-ify categories.
     df['categories'] = list(map(condense_category_string, df['categories']))
     dummy_categories = df.categories.str.get_dummies(sep = ';')
     df = pd.concat([df[df.columns[:5]], dummy_categories], axis = 1)
     df = df.drop('categories', axis = 1)
+    # Make list of all categories
+    dummy_columns = list(df.columns)[4:]
     # Since the duplicates are removed by message this sorting ensures that the
     # duplicates with the most columns are preserved.
-    dummy_columns = list(df.columns)[4:]
-    print(dummy_columns)
     df['cat_count'] = df[dummy_columns].sum(axis = 1)
-    df = df.sort_values('cat_count', ascending = False)
     # Drop duplicate messages.
+    df = df.sort_values('cat_count', ascending = False)
     df.drop_duplicates(subset = ['message'], inplace = True)
-    # Restore previous state but without duplicates.
-    df = df.drop('cat_count', axis = 1).sort_values('id')
+    # Reorder columns
+    column_order = ['id', 'message', 'original', 'genre', 'cat_count']
+    column_order.extend(dummy_columns)
+    df = df[column_order]
     
     return df
 
