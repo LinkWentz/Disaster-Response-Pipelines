@@ -84,10 +84,13 @@
         </div>
         <hr />
         <div class='container'>
-            <div class="col-4">
-                {% for id in ids %}
-                    <div id="{{id}}"></div>
-                {% endfor %}
+            <div class='row'>
+                <div class="col-6">
+                    <div id="{{ids[0]}}" class='d-flex align-items-center justify-content-center'></div>
+                </div>
+                <div class="col-6">
+                    <div id="{{ids[1]}}" class='d-flex align-items-center justify-content-center'></div>
+                </div>
             </div>
         </div>
     </div>

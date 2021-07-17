@@ -1,8 +1,9 @@
 import json
 import re
-import plotly
 import numpy as np
 import pandas as pd
+import plotly
+import sqlite3 as sql
 
 from nltk.stem import WordNetLemmatizer
 from nltk.tokenize import word_tokenize
@@ -32,10 +33,18 @@ def title(text):
     text = text.title()
     return text
 
-# load data
-engine = create_engine('sqlite:///../data/DisasterResponse.db')
-df = pd.read_sql_table('categorized_messages', engine)
+conn = sql.connect('../data/DisasterResponse.db')
+# Get main messages data
+df = pd.read_sql_query('SELECT * FROM categorized_messages', conn)
+df.drop('index', axis = 1, inplace = True)
+# Get messages bag of words
+bow = pd.read_sql_query('SELECT * FROM messages_bag_of_words', conn)
+bow.drop('index', axis = 1, inplace = True)
+bow = bow.T
+bow['sum'] = np.matrix(bow).sum(axis = 1)
+bow = bow.sort_values('sum', ascending = False)
 
+conn.close()
 # Get category labels and convert them to title case
 category_labels = [title(category) for category in df.columns[5:]]
 # load model
@@ -49,10 +58,10 @@ def index():
     # Save user input in query
     query = request.args.get('query', '')
     # Get the predictions for each category
-    category_labels = model.predict([query])[0]
+    category_values = model.predict([query])[0]
     # Associate the predictions with the category labels
     category_list = list(zip(category_labels, 
-                             category_labels))
+                             category_values))
     # Reshape list into table
     category_table = []
     cats_per_row = 3
@@ -61,6 +70,9 @@ def index():
     # Extract data needed for visuals
     cat_count_counts = df.groupby('cat_count').count()['message']
     cat_count_labels = list(np.arange(0, 10))
+    
+    word_counts = bow[0:20]
+    word_counts = word_counts['sum']
     # Create visuals
     graphs = [
         {
@@ -72,12 +84,31 @@ def index():
             ],
 
             'layout': {
-                'title': '',
+                'title': 'Messages By Amount of Categories',
                 'yaxis': {
-                    'title': "Distribution of Amount of Categories"
+                    'title': ''
                 },
-                'width':330,
-                'height':330
+                'width':500,
+                'height':500
+            }
+        },
+        {
+            'data': [
+                Bar(
+                    x=word_counts,
+                    y=word_counts.index,
+                    orientation='h'
+                )
+            ],
+
+            'layout': {
+                'title': 'Most Common Words',
+                'yaxis': {
+                    'title': '',
+                    'categoryorder':'total ascending'
+                },
+                'width':500,
+                'height':500
             }
         }
     ]

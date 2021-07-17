@@ -30,7 +30,7 @@ def load_data(database_filepath):
     df.drop('index', axis = 1, inplace = True)
     # Unpack data.
     X = df['message']
-    Y = df[df.columns[6:]]
+    Y = df[df.columns[5:]]
     
     return X, Y
 
