@@ -107,19 +107,19 @@
                     <tbody>
                         {% for row in category_table %}
                             <tr>
-                                {% for category, value in row %}
-                                    {% if value == 1 %}
+                                {% for category in row %}
+                                    {% if category.value == 1 %}
                                         <td class='alert-success tooltip-custom'>
-                                            {{ category }}
+                                            {{ category.name }}
                                             <div class='tooltiptextwrapper'>
-                                                <span class='tooltiptext'>placeholder</span>
+                                                <span class='tooltiptext'>{{ category.count }}</span>
                                             </div>
                                         </td>
                                     {% else %}
                                         <td class='tooltip-custom'>
-                                            {{ category }}
+                                            {{ category.name }}
                                             <div class='tooltiptextwrapper'>
-                                                <span class='tooltiptext'>placeholder</span>
+                                                <span class='tooltiptext'>{{ category.count }}</span>
                                             </div>
                                         </td>
                                     {% endif %}

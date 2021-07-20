@@ -33,6 +33,10 @@ def title(text):
     text = text.title()
     return text
 
+def get_count(column_name):
+    count = df.groupby(column_name).count().loc[1]['message']
+    return count
+
 conn = sql.connect('../data/DisasterResponse.db')
 # Get main messages data
 df = pd.read_sql_query('SELECT * FROM categorized_messages', conn)
@@ -47,6 +51,7 @@ bow = bow.sort_values('sum', ascending = False)
 conn.close()
 # Get category labels and convert them to title case
 category_labels = [title(category) for category in df.columns[5:]]
+category_counts = [get_count(category) for category in df.columns[5:]]
 # load model
 model = joblib.load("../models/classifier.pkl")
 
@@ -60,8 +65,11 @@ def index():
     # Get the predictions for each category
     category_values = model.predict([query])[0]
     # Associate the predictions with the category labels
-    category_list = list(zip(category_labels, 
+    category_list = list(zip(category_labels,
+                             category_counts,
                              category_values))
+    category_list = list(map(lambda x : {'name':x[0],'count':x[1],'value':x[2]},
+                             category_list))
     # Reshape list into table
     category_table = []
     cats_per_row = 3
