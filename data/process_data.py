@@ -1,6 +1,7 @@
 import chardet
 import sys
 import numpy as np
+import os
 import pandas as pd
 import re
 import sqlite3 as sql
@@ -46,6 +47,22 @@ def load_data(messages_filepath, categories_filepath):
     
     return messages_and_categories
 
+def tokenize(string):
+    """Returns an iterable of clean tokens made from the provided string.
+    """
+    # Normalize string.
+    string = string.lower()
+    string = re.sub('[\']', '', string)# Remove apostrophes
+    string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space
+    string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single
+    string = re.sub('^ ', '', string)# Remove leading space
+    string = re.sub(' $', '', string)# Remove trailing space
+    # Tokenize string.
+    tokens = string.split(' ')
+    tokens = [word for word in tokens if word not in stopwords]
+
+    return tokens
+
 def clean_data(df):
     """Dummy the values in the "categories" column of the provided pandas 
     dataframe, find the original language of each message, and remove all 
@@ -71,27 +88,24 @@ def clean_data(df):
     
     return df
 
-def bow_transform(df):
-    def tokenize(string):
-        """Returns an iterable of clean tokens made from the provided string.
-        """
-        # Normalize string.
-        string = string.lower()
-        string = re.sub('[\']', '', string)# Remove apostrophes
-        string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space
-        string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single
-        string = re.sub('^ ', '', string)# Remove leading space
-        string = re.sub(' $', '', string)# Remove trailing space
-        # Tokenize string.
-        tokens = string.split(' ')
-        tokens = [word for word in tokens if word not in stopwords]
-
-        return tokens
-    vectorizer = CountVectorizer(tokenizer = tokenize, max_features = 1500)
-    bow = vectorizer.fit_transform(df['message'])
-    bow = pd.DataFrame(bow.todense(), columns=vectorizer.get_feature_names())
+def get_most_common_words(df, count = 20):
     
-    return bow
+    vectorizer = CountVectorizer(tokenizer = tokenize, max_features = 1500)
+    
+    bag_of_words = vectorizer.fit_transform(df['message'])
+    bag_of_words = pd.DataFrame(bag_of_words.todense(), 
+                                columns=vectorizer.get_feature_names())
+    bag_of_words = bag_of_words.T
+    
+    bag_of_words['sum'] = np.matrix(bag_of_words).sum(axis = 1)
+    
+    most_common_words = pd.DataFrame(bag_of_words['sum'])
+    most_common_words = most_common_words.sort_values('sum', ascending = False)
+    most_common_words = most_common_words[0:count]
+    
+    print(most_common_words)
+    
+    return most_common_words
 
 def save_data(df, table_name, database_filename):
     """Save provided pandas dataframe to the specified sql database file.
@@ -107,20 +121,22 @@ def save_data(df, table_name, database_filename):
 
 def main():
     if len(sys.argv) == 4:
-
+        
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
 
+        os.remove(database_filepath)
+        
         print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'\
               .format(messages_filepath, categories_filepath))
         df = load_data(messages_filepath, categories_filepath)
 
         print('Cleaning data...')
         clean_df = clean_data(df)
-        bow_df = bow_transform(df)
+        bow_df = get_most_common_words(df)
         
         print('Saving data...\n    DATABASE: {}'.format(database_filepath))
         save_data(clean_df, 'categorized_messages', database_filepath)
-        save_data(bow_df, 'messages_bag_of_words', database_filepath)
+        save_data(bow_df, 'most_common_words', database_filepath)
         
         print('Cleaned data saved to database!')
     

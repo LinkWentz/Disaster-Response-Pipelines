@@ -42,11 +42,7 @@ conn = sql.connect('../data/DisasterResponse.db')
 df = pd.read_sql_query('SELECT * FROM categorized_messages', conn)
 df.drop('index', axis = 1, inplace = True)
 # Get messages bag of words
-bow = pd.read_sql_query('SELECT * FROM messages_bag_of_words', conn)
-bow.drop('index', axis = 1, inplace = True)
-bow = bow.T
-bow['sum'] = np.matrix(bow).sum(axis = 1)
-bow = bow.sort_values('sum', ascending = False)
+most_common_words = pd.read_sql_query('SELECT * FROM most_common_words', conn)
 
 conn.close()
 # Get category labels and convert them to title case
@@ -78,9 +74,8 @@ def index():
     # Extract data needed for visuals
     cat_count_counts = df.groupby('cat_count').count()['message']
     cat_count_labels = list(np.arange(0, 10))
-    
-    word_counts = bow[0:20]
-    word_counts = word_counts['sum']
+
+    print(most_common_words)
     # Create visuals
     graphs = [
         {
@@ -103,8 +98,8 @@ def index():
         {
             'data': [
                 Bar(
-                    x=word_counts,
-                    y=word_counts.index,
+                    x=most_common_words['sum'],
+                    y=most_common_words['index'],
                     orientation='h'
                 )
             ],
