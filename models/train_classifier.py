@@ -10,11 +10,18 @@ from nltk.stem.porter import PorterStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
 stopwords = set(stopwords.words('english'))
 
+from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.utils import shuffle
 from sklearn.metrics import f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.pipeline import Pipeline
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.svm import LinearSVC
+from sklearn.ensemble import VotingClassifier
+from sklearn.gaussian_process import GaussianProcessClassifier
+from sklearn.linear_model import LogisticRegression, Perceptron
+from sklearn.multioutput import MultiOutputClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 
 def load_data(database_filepath):
     """This function loads categorized_messages from SQL database and splits the
@@ -25,12 +32,12 @@ def load_data(database_filepath):
     """
     # Get data from database.
     conn = sql.connect(database_filepath)
-    df = pd.read_sql_query('SELECT * FROM categorized_messages LIMIT 2000', conn)
+    df = pd.read_sql_query('SELECT * FROM categorized_messages', conn)
     conn.close()
     df.drop('index', axis = 1, inplace = True)
     # Unpack data.
-    X = df['message']
-    Y = df[df.columns[5:]]
+    X = np.array(df['message'])
+    Y = np.array(df[df.columns[5:]])
     
     return X, Y
 
@@ -52,7 +59,7 @@ def tokenize(string):
     
     return tokens
 
-def build_model(classifier = DecisionTreeClassifier()):
+def build_model():
     """Constructs model using a classifier. This model can be used to predict
     multi-label output from text data.
     
@@ -63,12 +70,28 @@ def build_model(classifier = DecisionTreeClassifier()):
     # Define base pipeline.
     pipeline = Pipeline([
         ('feature_extraction', TfidfVectorizer(tokenizer = tokenize)),
-        ('classifier', classifier)
+        ('classifier', MultiOutputClassifier(LogisticRegression()))
     ])
     # Set up grid search cross validation.
-    param_grid = {
-        'classifier__random_state': [20]
-    }
+    param_grid = [
+        {'classifier__estimator__fit_intercept': [False, True],
+         'classifier__estimator__penalty': ['l2'],
+         'classifier__estimator__solver': ['sag', 'saga'],
+         'classifier__estimator__max_iter': [1000, 2000, 3000],
+         'classifier': [MultiOutputClassifier(LogisticRegression())]},
+        {'classifier__estimator__penalty': ['l2'],
+         'classifier__estimator__loss': ['hinge', 'squared_hinge'],
+         'classifier__estimator__C': [1, 2],
+         'classifier__estimator__multi_class': ['ovr', 'crammer_singer'],
+         'classifier__estimator__fit_intercept': [True, False],
+         'classifier': [MultiOutputClassifier(LinearSVC())]},
+        {'classifier__estimator__fit_intercept': [True, False],
+         'classifier__estimator__early_stopping': [True],
+         'classifier__estimator__max_iter': [1000, 2000, 3000],
+         'classifier__estimator__penalty': ['l2'],
+         'classifier': [MultiOutputClassifier(Perceptron())]}
+    ]
+    
     cv_model = GridSearchCV(pipeline, param_grid)
     
     return cv_model
