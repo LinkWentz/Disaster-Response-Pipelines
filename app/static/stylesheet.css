@@ -40,12 +40,14 @@ td {
     visibility: hidden;
     /* Positioning */
     position: absolute;
-    left: -60px;
+    left: -40px;
     z-index: 1;
     /* Sizing */
-    width: 120px;
+    width: 80px;
 }
 .hover-bubble .bubbletext::after {
+    /* Properties */
+    content: " ";
     /* Border */
     border-width: 5px;
     border-style: solid;
