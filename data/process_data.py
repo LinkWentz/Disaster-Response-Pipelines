@@ -117,7 +117,8 @@ def main():
         
         messages_filepath, categories_filepath, database_filepath = sys.argv[1:]
 
-        os.remove(database_filepath)
+        if os.path.isfile(database_filepath):
+            os.remove(database_filepath)
         
         print('Loading data...\n    MESSAGES: {}\n    CATEGORIES: {}'\
               .format(messages_filepath, categories_filepath))
