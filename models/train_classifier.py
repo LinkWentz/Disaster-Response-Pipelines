@@ -1,34 +1,34 @@
-import sys
+# Imports.
 import numpy as np
 import pandas as pd
 import pickle
 import re
 import sqlite3 as sql
-
+import sys
+# nltk imports.
 from nltk.corpus import stopwords
-from nltk.stem.porter import PorterStemmer
 from nltk.stem.wordnet import WordNetLemmatizer
-stopwords = set(stopwords.words('english'))
 
+stopwords = set(stopwords.words('english'))
+# scikit-learn imports.
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.ensemble import AdaBoostClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.utils import shuffle
+from sklearn.linear_model import LogisticRegression, Perceptron
 from sklearn.metrics import f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
-from sklearn.ensemble import VotingClassifier
-from sklearn.gaussian_process import GaussianProcessClassifier
-from sklearn.linear_model import LogisticRegression, Perceptron
-from sklearn.multioutput import MultiOutputClassifier
-from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
+from sklearn.utils import shuffle
 
 def load_data(database_filepath):
     """This function loads categorized_messages from SQL database and splits the
-    data into X and Y dataframes.
+    data into X and Y numpy arrays.
     
     args:
-        database_filepath - location of the sql database from which to pull data
+        database_filepath - location of the sql database from which to pull 
+        data.
     """
     # Get data from database.
     conn = sql.connect(database_filepath)
@@ -47,11 +47,11 @@ def tokenize(string):
     lemmer = WordNetLemmatizer()
     # Normalize string.
     string = string.lower()
-    string = re.sub('[\']', '', string)# Remove apostrophes
-    string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space
-    string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single
-    string = re.sub('^ ', '', string)# Remove leading space
-    string = re.sub(' $', '', string)# Remove trailing space
+    string = re.sub('[\']', '', string)# Remove apostrophes.
+    string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space.
+    string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single.
+    string = re.sub('^ ', '', string)# Remove leading space.
+    string = re.sub(' $', '', string)# Remove trailing space.
     # Tokenize string.
     tokens = string.split(' ')
     tokens = [word for word in tokens if word not in stopwords]
@@ -60,26 +60,22 @@ def tokenize(string):
     return tokens
 
 def build_model():
-    """Constructs model using a classifier. This model can be used to predict
-    multi-label output from text data.
-    
-    optional args:
-        classifier - sklearn classifier with multilabel output
-            defaults to DecisionTreeClassifier()
+    """Construct a GridSearchCV model which can be fit to a multi output
+    classification problem.
     """
     # Define base pipeline.
     pipeline = Pipeline([
         ('feature_extraction', TfidfVectorizer(tokenizer = tokenize)),
         ('classifier', MultiOutputClassifier(LogisticRegression()))
     ])
-    # Set up grid search cross validation.
+    
     param_grid = [
         {'classifier__estimator__fit_intercept': [False, True],
          'classifier__estimator__penalty': ['l2'],
          'classifier__estimator__solver': ['sag', 'saga'],
          'classifier__estimator__max_iter': [1000, 2000, 3000],
          'classifier': [MultiOutputClassifier(LogisticRegression())]},
-        {'classifier__estimator__penalty': ['l2'],
+        {'classifier__estimator__penalty': ['l2'],git statu
          'classifier__estimator__loss': ['hinge', 'squared_hinge'],
          'classifier__estimator__C': [1, 2],
          'classifier__estimator__multi_class': ['ovr', 'crammer_singer'],
@@ -101,8 +97,8 @@ def score(Y_true, Y_pred, avg_setting = 'macro'):
     compared to the correct labels.
     
     args:
-        Y-true - correct labels
-        Y-pred - predicted labels
+        Y-true - correct labels.
+        Y-pred - predicted labels.
     optional args:
         avg_setting - value for the average parameter of every sklearn scorer.
             defaults to 'macro'
@@ -117,9 +113,9 @@ def evaluate_model(model, X_test, Y_test):
     """Evaluates the f1, precision, and recall of the provided model.
     
     args:
-        model - trained sklearn classifier to be evaluated
-        X_test - test data the classifier will predict on
-        Y-test - correct labels to which the predictions will be compared
+        model - trained sklearn classifier to be evaluated.
+        X_test - test data the classifier will predict on.
+        Y-test - correct labels to which the predictions will be compared.
     """
     # Generate predictions.
     preds = model.predict(X_test)
@@ -132,11 +128,11 @@ def evaluate_model(model, X_test, Y_test):
     print(result_message.format(f1, precision, recall))
 
 def save_model(model, model_filepath):
-    """Exports provided model as pickle to provided filepath./
+    """Exports provided model as pickle to provided filepath.
     
     args:
-        model - sklearn classifier
-        model_filepath - path to which the model should be exported
+        model - scikit-learn model.
+        model_filepath - path to which the model should be exported.
     """
     pickle.dump(model, open(model_filepath, "wb"))
 
