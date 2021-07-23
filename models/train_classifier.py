@@ -5,11 +5,9 @@ import pickle
 import re
 import sqlite3 as sql
 import sys
-# nltk imports.
-from nltk.corpus import stopwords
-from nltk.stem.wordnet import WordNetLemmatizer
-
-stopwords = set(stopwords.words('english'))
+# Custom imports.
+sys.path.append('../universal')
+import universal_functions as uf
 # scikit-learn imports.
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import AdaBoostClassifier
@@ -43,31 +41,13 @@ def load_data(database_filepath):
     
     return X, Y, Y_labels
 
-def tokenize(string):
-    """Return an iterable of clean tokens made from the provided string.
-    """
-    lemmer = WordNetLemmatizer()
-    # Normalize string.
-    string = string.lower()
-    string = re.sub('[\']', '', string)# Remove apostrophes.
-    string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space.
-    string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single.
-    string = re.sub('^ ', '', string)# Remove leading space.
-    string = re.sub(' $', '', string)# Remove trailing space.
-    # Tokenize string.
-    tokens = string.split(' ')
-    tokens = [word for word in tokens if word not in stopwords]
-    tokens = list(map(lemmer.lemmatize, tokens))
-    
-    return tokens
-
 def build_model():
     """Construct a GridSearchCV model which can be fit to a multi output
     classification problem.
     """
     # Define base pipeline.
     pipeline = Pipeline([
-        ('feature_extraction', TfidfVectorizer(tokenizer = tokenize)),
+        ('feature_extraction', TfidfVectorizer(tokenizer = uf.tokenize)),
         ('classifier', MultiOutputClassifier(LogisticRegression()))
     ])
     

@@ -6,10 +6,9 @@ import pandas as pd
 import re
 import sqlite3 as sql
 import sys
-# nltk imports.
-from nltk.corpus import stopwords
-
-stopwords = set(stopwords.words('english'))
+# Custom imports.
+sys.path.append('../universal')
+import universal_functions as uf
 # scikit-learn imports.
 from sklearn.feature_extraction.text import CountVectorizer
 
@@ -51,22 +50,6 @@ def load_data(messages_filepath, categories_filepath):
     
     return messages_and_categories
 
-def tokenize(string):
-    """Returns an iterable of clean tokens made from the provided string.
-    """
-    # Normalize string.
-    string = string.lower()
-    string = re.sub('[\']', '', string)# Remove apostrophes.
-    string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space.
-    string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single.
-    string = re.sub('^ ', '', string)# Remove leading space.
-    string = re.sub(' $', '', string)# Remove trailing space.
-    # Tokenize string.
-    tokens = string.split(' ')
-    tokens = [word for word in tokens if word not in stopwords]
-
-    return tokens
-
 def clean_data(df):
     """Dummy the values in the "categories" column of the provided pandas 
     dataframe, add column representing the number of categories into which each
@@ -103,7 +86,7 @@ def get_most_common_words(df, count = 20):
     optional args:
         count - the amount of words to include in the resultant dataframe.
     """
-    vectorizer = CountVectorizer(tokenizer = tokenize, max_features = count)
+    vectorizer = CountVectorizer(tokenizer = uf.tokenize, max_features = count)
 
     bag_of_words = vectorizer.fit_transform(df['message']).todense()
     bag_of_words = pd.DataFrame(bag_of_words, 

@@ -6,38 +6,18 @@ import pandas as pd
 import plotly
 import re
 import sqlite3 as sql
-# nltk imports.
-from nltk.corpus import stopwords
-from nltk.stem import WordNetLemmatizer
-from nltk.tokenize import word_tokenize
-
-stopwords = set(stopwords.words('english'))
+import sys
+# Custom imports.
+sys.path.append('../universal')
+import universal_functions as uf
 # Flask imports.
 from flask import Flask, render_template, request, jsonify
 # Plotly imports.
 from plotly.graph_objs import Bar
 
+# Note that some imports are made solely to accomodate the model.
+
 app = Flask(__name__)
-
-def tokenize(string):
-    """Returns an iterable of clean tokens made from the provided string.
-    """
-    # Normalize string.
-    string = string.lower()
-    substitutions = [
-        ('[\']', '',), # Remove apostrophes.
-        ('[^a-zA-Z0-9]', ' ',), # Convert non-alphanumeric chars to spaces.
-        (' {2,}', ' ',), # Convert multiple spaces to single space.
-        ('^ ', '',), # Remove leading space.
-        (' $', '',)  # Remove trailing space.
-    ]
-    for pattern, replacement in substitutions:
-        string = re.sub(pattern, replacement, string)
-    # Tokenize string.
-    tokens = string.split(' ')
-    tokens = [word for word in tokens if word not in stopwords]
-
-    return tokens
 
 def title(string):
     """Convert provided string to title case.
