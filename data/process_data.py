@@ -13,9 +13,9 @@ import universal_functions as uf
 from sklearn.feature_extraction.text import CountVectorizer
 
 def condense_category_string(category_string, cat_sep = ';', val_sep = '-'):
-    """This function takes a string like this:
+    """Take a string like this:
         'alpha-0;beta-1;charlie-0;delta-1'
-    and converts it to this:
+    and convert it to this:
         'beta;delta'
     
     args:
@@ -36,8 +36,8 @@ def condense_category_string(category_string, cat_sep = ';', val_sep = '-'):
     return dense_cats_string
 
 def load_data(messages_filepath, categories_filepath):
-    """Load messages and their associated category labels from two csv files
-    and merge into a pandas dataframe.
+    """Load messages and their associated category labels from their csv files
+    and merge them into a pandas dataframe.
     
     args:
         messages_filepath - path to the messages csv file.
@@ -52,8 +52,8 @@ def load_data(messages_filepath, categories_filepath):
 
 def clean_data(df):
     """Dummy the values in the "categories" column of the provided pandas 
-    dataframe, add column representing the number of categories into which each
-    message fits, and drop duplicate messages.
+    dataframe, add a column representing the number of categories assigned to
+    each message, and drop duplicate messages.
     """
     # Dummy-ify categories.
     df['categories'] = list(map(condense_category_string, df['categories']))
@@ -75,26 +75,28 @@ def clean_data(df):
     
     return df
 
-def get_most_common_words(df, count = 20):
-    """ Count the occurences of each word in the "messages" column of the
-    provided dataframe and return a dataframe containing the most common words 
-    in them.
+def get_most_common_words(df, count = 20, column_name = 'messages'):
+    """Count the occurrences of each word in the specified column of the
+    provided dataframe and return a dataframe containing the words with the most
+    occurrences.
     
     args:
-        df - dataframe with messages column of which you want to find the most
-        commonw words.
+        df - dataframe with column to analyze.
     optional args:
         count - the amount of words to include in the resultant dataframe.
+            defaults to 20
+        column_name - name of column to analyze in provided dataframe.
+            defaults to 'messages'
     """
     vectorizer = CountVectorizer(tokenizer = uf.tokenize, max_features = count)
 
     bag_of_words = vectorizer.fit_transform(df['message']).todense()
     bag_of_words = pd.DataFrame(bag_of_words, 
                                 columns=vectorizer.get_feature_names())
-    # Find the occurences of each word.
+    # Find the occurrences of each word.
     bag_of_words = bag_of_words.T
     bag_of_words['sum'] = np.matrix(bag_of_words).sum(axis = 1)
-    # Create a data frame containing only the words and their occurences.
+    # Create a data frame containing only the words and their occurrences.
     most_common_words = pd.DataFrame(bag_of_words['sum'])
     most_common_words = most_common_words.sort_values('sum', ascending = False)
 

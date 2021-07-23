@@ -19,12 +19,12 @@ from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
 
 def load_data(database_filepath):
-    """Load categorized_messages table from SQL database and split the data into
-    X and Y numpy arrays as well providing the labels for each category.
+    """Load categorized_messages table from provided database and return X and Y
+    matrices as well as the labels for the Y matrix.
     
     args:
         database_filepath - location of the sql database from which to pull 
-        data.
+        the messages data.
     """
     # Get data from database.
     conn = sql.connect(database_filepath)
@@ -87,7 +87,7 @@ def evaluate_model(model, X_test, Y_test, Y_labels = None):
     print(report)
 
 def save_model(model, model_filepath):
-    """Export provided model as pickle to provided filepath.
+    """Export provided model to provided filepath as a pickle.
     
     args:
         model - scikit-learn model.

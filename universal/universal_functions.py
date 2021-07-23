@@ -5,8 +5,9 @@ from nltk.corpus import stopwords
 from nltk.stem.wordnet import WordNetLemmatizer
 
 stopwords = set(stopwords.words('english'))
+
 def tokenize(string):
-    """Returns an iterable of clean tokens made from the provided string.
+    """Return an iterable of clean tokens made from the provided string.
     """
     # Normalize string.
     string = string.lower()

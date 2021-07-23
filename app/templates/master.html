@@ -6,8 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Disasters</title>
-    
-    <!-- Imports -->
+
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
     <link rel="stylesheet" href="{{ url_for("static", filename="stylesheet.css") }}">
@@ -45,7 +44,7 @@
             </div>
             <div class="col-6">
                 <h3 class="text-center">Result</h3>
-                <h6 class="text-center text-muted font-italic font-weight-light">Hover over a category to see the amount of messages associated with it.</h6>
+                <h6 class="text-center text-muted font-italic font-weight-light">Hover over a category to see the amount of messages associated with it</h6>
                 <table class="text-center outline">
                     <tbody>
                         {% for row in category_table %}

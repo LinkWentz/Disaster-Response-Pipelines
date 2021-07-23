@@ -34,17 +34,18 @@ def get_count(category):
     return count
 
 conn = sql.connect('../data/DisasterResponse.db')
-# Get main messages data
+# Get main messages data.
 df = pd.read_sql_query('SELECT * FROM categorized_messages', conn)
 df.drop('index', axis = 1, inplace = True)
-# Get messages bag of words
+# Get most common words table.
 most_common_words = pd.read_sql_query('SELECT * FROM most_common_words', conn)
-
 conn.close()
-# Get category labels and convert them to title case
+
+# Get category labels and convert them to title case.
 cat_names = [title(category) for category in df.columns[5:]]
 messages_per_category = [get_count(category) for category in df.columns[5:]]
-# load model
+
+# Load model.
 model = joblib.load("../models/classifier.pkl")
 
 # Index webpage displays cool visuals and receives user input text for model.
