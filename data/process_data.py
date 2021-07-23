@@ -1,13 +1,17 @@
+# Imports.
 import chardet
-import sys
 import numpy as np
 import os
 import pandas as pd
 import re
 import sqlite3 as sql
-from sklearn.feature_extraction.text import CountVectorizer
+import sys
+# nltk imports.
 from nltk.corpus import stopwords
+
 stopwords = set(stopwords.words('english'))
+# scikit-learn imports.
+from sklearn.feature_extraction.text import CountVectorizer
 
 def condense_category_string(category_string, cat_sep = ';', val_sep = '-'):
     """This function takes a string like this:
@@ -16,11 +20,11 @@ def condense_category_string(category_string, cat_sep = ';', val_sep = '-'):
         'beta;delta'
     
     args:
-        category_string - string formatted as above
+        category_string - string formatted as above.
     optional args:
-        cat_sep - delimiter between category-value pairs
+        cat_sep - delimiter between category-value pairs.
             defaults to ';'
-        val_sep - delimiter between category name and value
+        val_sep - delimiter between category name and value.
             defaults to '-'
     """
     # Seperate categories and their values.
@@ -37,8 +41,8 @@ def load_data(messages_filepath, categories_filepath):
     and merge into a pandas dataframe.
     
     args:
-        messages_filepath - path to the messages csv file
-        categories_filepath - path to the categories csv file
+        messages_filepath - path to the messages csv file.
+        categories_filepath - path to the categories csv file.
     """
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
@@ -52,11 +56,11 @@ def tokenize(string):
     """
     # Normalize string.
     string = string.lower()
-    string = re.sub('[\']', '', string)# Remove apostrophes
-    string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space
-    string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single
-    string = re.sub('^ ', '', string)# Remove leading space
-    string = re.sub(' $', '', string)# Remove trailing space
+    string = re.sub('[\']', '', string)# Remove apostrophes.
+    string = re.sub('[^a-zA-Z0-9]', ' ', string)# Convert non-alphanum to space.
+    string = re.sub(' {2,}', ' ', string)# Convert multiple spaces to single.
+    string = re.sub('^ ', '', string)# Remove leading space.
+    string = re.sub(' $', '', string)# Remove trailing space.
     # Tokenize string.
     tokens = string.split(' ')
     tokens = [word for word in tokens if word not in stopwords]
@@ -65,15 +69,15 @@ def tokenize(string):
 
 def clean_data(df):
     """Dummy the values in the "categories" column of the provided pandas 
-    dataframe, find the original language of each message, and remove all 
-    duplicates.
+    dataframe, add column representing the number of categories into which each
+    message fits, and drop duplicate messages.
     """
     # Dummy-ify categories.
     df['categories'] = list(map(condense_category_string, df['categories']))
     dummy_categories = df.categories.str.get_dummies(sep = ';')
     df = pd.concat([df[df.columns[:5]], dummy_categories], axis = 1)
     df = df.drop('categories', axis = 1)
-    # Make list of all categories
+    # Make list of all categories.
     dummy_columns = list(df.columns)[4:]
     # Since the duplicates are removed by message this sorting ensures that the
     # duplicates with the most columns are preserved.
@@ -81,7 +85,7 @@ def clean_data(df):
     # Drop duplicate messages.
     df = df.sort_values('cat_count', ascending = False)
     df.drop_duplicates(subset = ['message'], inplace = True)
-    # Reorder columns
+    # Reorder columns.
     column_order = ['id', 'message', 'original', 'genre', 'cat_count']
     column_order.extend(dummy_columns)
     df = df[column_order]
@@ -89,29 +93,35 @@ def clean_data(df):
     return df
 
 def get_most_common_words(df, count = 20):
+    """ Count the occurences of each word in the "messages" column of the
+    provided dataframe and return a dataframe containing the most common words 
+    in them.
     
-    vectorizer = CountVectorizer(tokenizer = tokenize, max_features = 1500)
-    
-    bag_of_words = vectorizer.fit_transform(df['message'])
-    bag_of_words = pd.DataFrame(bag_of_words.todense(), 
+    args:
+        df - dataframe with messages column of which you want to find the most
+        commonw words.
+    optional args:
+        count - the amount of words to include in the resultant dataframe.
+    """
+    vectorizer = CountVectorizer(tokenizer = tokenize, max_features = count)
+
+    bag_of_words = vectorizer.fit_transform(df['message']).todense()
+    bag_of_words = pd.DataFrame(bag_of_words, 
                                 columns=vectorizer.get_feature_names())
+    # Find the occurences of each word.
     bag_of_words = bag_of_words.T
-    
     bag_of_words['sum'] = np.matrix(bag_of_words).sum(axis = 1)
-    
+    # Create a data frame containing only the words and their occurences.
     most_common_words = pd.DataFrame(bag_of_words['sum'])
     most_common_words = most_common_words.sort_values('sum', ascending = False)
-    most_common_words = most_common_words[0:count]
-    
-    print(most_common_words)
-    
+
     return most_common_words
 
 def save_data(df, table_name, database_filename):
     """Save provided pandas dataframe to the specified sql database file.
     
     args:
-        df - pandas dataframe to save
+        df - pandas dataframe to save.
         database_filename - path of the SQL database file to which the dataframe
         should be saved.
     """
