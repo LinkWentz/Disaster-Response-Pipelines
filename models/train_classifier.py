@@ -18,7 +18,6 @@ from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline
 from sklearn.svm import LinearSVC
-from sklearn.utils import shuffle
 
 def load_data(database_filepath):
     """Load categorized_messages table from SQL database and split the data into
@@ -34,7 +33,6 @@ def load_data(database_filepath):
     conn.close()
     df.drop('index', axis = 1, inplace = True)
     # Unpack data.
-    df = df.sample(2000)
     X = np.array(df['message'])
     Y = np.array(df[df.columns[5:]])
     Y_labels = df.columns[5:]
