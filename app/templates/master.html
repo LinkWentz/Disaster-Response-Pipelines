@@ -6,120 +6,63 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Disasters</title>
+    
     <!-- Imports -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ url_for("static", filename="stylesheet.css") }}">
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <!-- Custom styling -->
-    <style>
-        td {
-            font-family: Arial;
-            border-radius: .3rem;
-        }
-        
-        .outline {
-            border-collapse: separate;
-            border: solid #ced4da 1px;
-            border-radius: .3rem;
-            width: 100%;
-            height: 35vh;
-        }
-        
-        .textbox {
-            height: 23vh !important;
-            resize: none;
-            overflow: auto; 
-        }
-        
-        .tooltiptextwrapper {
-            position: relative;
-            width: 0px;
-            height: 0px;
-            top: -50px;
-            left: 50%;
-        }
-        .tooltip-custom .tooltiptext {
-            visibility: hidden;
-            position: absolute;
-            z-index: 1;
-            color: black;
-            background-color: white;
-            width: 120px;
-            border-radius: 6px;
-            border: solid #ced4da 1px;
-            left: -60px;
-        }
-        .tooltip-custom .tooltiptext::after {
-            content: " ";
-            position: absolute;
-            top: 100%;
-            left: 50%;
-            margin-left: -5px;
-            border-width: 5px;
-            border-style: solid;
-            border-color: #ced4da transparent transparent transparent;
-        }
-        
-        .tooltip-custom:hover .tooltiptext {
-            visibility: visible;
-        }
-        .tooltiptext:hover .tooltiptext {
-            visibility: hidden;
-        }
-    </style>
 </head>
-
 <body>
 <nav class="navbar navbar-expand-sm bg-dark navbar-dark navbar-fixed-top">
     <div class="container">
         <a class="navbar-brand" href="/">Disaster Response Project</a>
         <ul class="navbar-nav">
-            <li class='nav-item'><a class='nav-link' href="https://www.udacity.com/">Made with Udacity</a></li>
-            <li class='nav-item'><a class='nav-link' href="https://github.com/LinkWentz">Contact</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://www.udacity.com/">Made with Udacity</a></li>
+            <li class="nav-item"><a class="nav-link" href="https://github.com/LinkWentz">Contact</a></li>
         </ul>
     </div>
 </nav>
-
-
 <div class="fluid-jumbotron">
     <div class="container">
-        <h1 class="text-center" style='padding-top: 2vh'>Disaster Response Project</h1>
+        <h1 class="text-center" style="padding-top: 2vh">Disaster Response Project</h1>
         <p class="text-center">Analyzing message data for disaster response</p>
         <hr />
         <div class="row align-items-center">
             <div class="col-6 form-group-lg">
                 <form action="/" method="get">
-                    {% if query == '' %}
-                        <textarea type="text" class="textbox form-control form-control-lg" name="query" placeholder='Enter a message to classify'></textarea>
+                    {% if query == "" %}
+                        <textarea type="text" class="textbox form-control form-control-lg" name="query" placeholder="Enter a message to classify"></textarea>
                     {% else %}
-                        <textarea type="text" class="textbox form-control form-control-lg" name="query" placeholder='{{ query }}'></textarea>
+                        <textarea type="text" class="textbox form-control form-control-lg" name="query" placeholder="{{ query }}"></textarea>
                     {% endif %}
                     <div>
                         <button type="submit" class="btn btn-md btn-success">Classify Message</button>
                     </div>
                 </form>
             </div>
-            <div class='col-6'>
+            <div class="col-6">
                 <h3 class="text-center">Result</h3>
-                <table class='text-center outline'>
+                <h6 class="text-center text-muted font-italic font-weight-light">Hover over a category to see the amount of messages associated with it.</h6>
+                <table class="text-center outline">
                     <tbody>
                         {% for row in category_table %}
                             <tr>
                                 {% for category in row %}
                                     {% if category.value == 1 %}
-                                        <td class='alert-success tooltip-custom'>
+                                        <td class="alert-success hover-bubble">
                                             {{ category.name }}
-                                            <div class='tooltiptextwrapper'>
-                                                <span class='tooltiptext'>{{ category.count }}</span>
+                                            <div class="bubbletextwrapper">
+                                                <span class="bubbletext">{{ category.count }}</span>
                                             </div>
                                         </td>
                                     {% else %}
-                                        <td class='tooltip-custom'>
+                                        <td class="hover-bubble">
                                             {{ category.name }}
-                                            <div class='tooltiptextwrapper'>
-                                                <span class='tooltiptext'>{{ category.count }}</span>
+                                            <div class="bubbletextwrapper">
+                                                <span class="bubbletext">{{ category.count }}</span>
                                             </div>
                                         </td>
                                     {% endif %}
@@ -131,20 +74,18 @@
             </div>
         </div>
         <hr />
-        <div class='container'>
-            <div class='row'>
+        <div class="container">
+            <div class="row">
                 <div class="col-6">
-                    <div id="{{ids[0]}}" class='d-flex align-items-center justify-content-center'></div>
+                    <div id="{{ids[0]}}" class="d-flex align-items-center justify-content-center"></div>
                 </div>
                 <div class="col-6">
-                    <div id="{{ids[1]}}" class='d-flex align-items-center justify-content-center'></div>
+                    <div id="{{ids[1]}}" class="d-flex align-items-center justify-content-center"></div>
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-                
 
 <script type="text/javascript">
     const graphs = {{graphJSON | safe}};

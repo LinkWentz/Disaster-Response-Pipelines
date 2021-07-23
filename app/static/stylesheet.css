@@ -1,0 +1,66 @@
+td {
+    /* Border */
+    border-radius: .3rem;
+    /* Font */
+    font-family: Arial;
+}
+.outline {
+    /* Border */
+    border: solid #ced4da 1px;
+    border-collapse: separate;
+    border-radius: .3rem;
+    /* Sizing */
+    height: 35vh;
+    width: 100%;
+}
+.textbox {
+    /* Properties */
+    overflow: auto;
+    /* Sizing */
+    height: 23vh !important;
+    resize: none;
+}
+.bubbletextwrapper {
+    /* Positioning */
+    position: relative;
+    top: -50px;
+    left: 50%;
+    /* Sizing */
+    width: 0px;
+    height: 0px;
+}
+.hover-bubble .bubbletext {
+    /* Border */
+    border: solid #ced4da 1px;
+    border-radius: 6px;
+    /* Coloring */
+    background-color: white;
+    color: black;
+    /* Properties */
+    visibility: hidden;
+    /* Positioning */
+    position: absolute;
+    left: -60px;
+    z-index: 1;
+    /* Sizing */
+    width: 120px;
+}
+.hover-bubble .bubbletext::after {
+    /* Border */
+    border-width: 5px;
+    border-style: solid;
+    border-color: #ced4da transparent transparent transparent;
+    /* Positioning */
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+}
+.hover-bubble:hover .bubbletext {
+    /* Properties */
+    visibility: visible;
+}
+.bubbletext:hover .bubbletext {
+    /* Properties */
+    visibility: hidden;
+}
