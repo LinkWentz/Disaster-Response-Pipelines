@@ -15,7 +15,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression, Perceptron
-from sklearn.metrics import f1_score, precision_score, recall_score
+from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.pipeline import Pipeline
@@ -23,8 +23,8 @@ from sklearn.svm import LinearSVC
 from sklearn.utils import shuffle
 
 def load_data(database_filepath):
-    """This function loads categorized_messages from SQL database and splits the
-    data into X and Y numpy arrays.
+    """Load categorized_messages table from SQL database and split the data into
+    X and Y numpy arrays as well providing the labels for each category.
     
     args:
         database_filepath - location of the sql database from which to pull 
@@ -36,13 +36,15 @@ def load_data(database_filepath):
     conn.close()
     df.drop('index', axis = 1, inplace = True)
     # Unpack data.
+    df = df.sample(2000)
     X = np.array(df['message'])
     Y = np.array(df[df.columns[5:]])
+    Y_labels = df.columns[5:]
     
-    return X, Y
+    return X, Y, Y_labels
 
 def tokenize(string):
-    """Returns an iterable of clean tokens made from the provided string.
+    """Return an iterable of clean tokens made from the provided string.
     """
     lemmer = WordNetLemmatizer()
     # Normalize string.
@@ -75,7 +77,7 @@ def build_model():
          'classifier__estimator__solver': ['sag', 'saga'],
          'classifier__estimator__max_iter': [1000, 2000, 3000],
          'classifier': [MultiOutputClassifier(LogisticRegression())]},
-        {'classifier__estimator__penalty': ['l2'],git statu
+        {'classifier__estimator__penalty': ['l2'],
          'classifier__estimator__loss': ['hinge', 'squared_hinge'],
          'classifier__estimator__C': [1, 2],
          'classifier__estimator__multi_class': ['ovr', 'crammer_singer'],
@@ -92,25 +94,8 @@ def build_model():
     
     return cv_model
 
-def score(Y_true, Y_pred, avg_setting = 'macro'):
-    """Returns the F1, precision, and recall scores of the predicted labels 
-    compared to the correct labels.
-    
-    args:
-        Y-true - correct labels.
-        Y-pred - predicted labels.
-    optional args:
-        avg_setting - value for the average parameter of every sklearn scorer.
-            defaults to 'macro'
-    """
-    f1 = f1_score(Y_true, Y_pred, average = avg_setting)
-    precision = precision_score(Y_true, Y_pred, average = avg_setting)
-    recall = recall_score(Y_true, Y_pred, average = avg_setting)
-    
-    return f1, precision, recall
-
-def evaluate_model(model, X_test, Y_test):
-    """Evaluates the f1, precision, and recall of the provided model.
+def evaluate_model(model, X_test, Y_test, Y_labels = None):
+    """Evaluate the precision, recall, f1, and support of the provided model.
     
     args:
         model - trained sklearn classifier to be evaluated.
@@ -120,15 +105,12 @@ def evaluate_model(model, X_test, Y_test):
     # Generate predictions.
     preds = model.predict(X_test)
     # Score predictions.
-    f1, precision, recall = score(Y_test, preds)
+    report = classification_report(Y_test, preds, target_names = Y_labels)
     # Output results.
-    result_message = ('F1 score: {:.2f}\n'\
-                      'Precision: {:.2f}\n'\
-                      'Recall: {:.2f}')
-    print(result_message.format(f1, precision, recall))
+    print(report)
 
 def save_model(model, model_filepath):
-    """Exports provided model as pickle to provided filepath.
+    """Export provided model as pickle to provided filepath.
     
     args:
         model - scikit-learn model.
@@ -140,7 +122,7 @@ def main():
     if len(sys.argv) == 3:
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
-        X, Y = load_data(database_filepath)
+        X, Y, Y_labels = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
         
         print('Building model...')
@@ -150,7 +132,7 @@ def main():
         model.fit(X_train, Y_train)
         
         print('Evaluating model...')
-        evaluate_model(model, X_test, Y_test)
+        evaluate_model(model, X_test, Y_test, Y_labels)
 
         print('Saving model...\n    MODEL: {}'.format(model_filepath))
         save_model(model, model_filepath)
