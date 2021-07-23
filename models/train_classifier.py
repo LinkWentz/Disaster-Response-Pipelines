@@ -10,7 +10,6 @@ sys.path.append('../universal')
 import universal_functions as uf
 # scikit-learn imports.
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.ensemble import AdaBoostClassifier
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression, Perceptron
 from sklearn.metrics import classification_report
