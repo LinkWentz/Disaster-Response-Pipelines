@@ -5,11 +5,13 @@ import pickle
 import re
 import sqlite3 as sql
 import sys
+import warnings
 # Custom imports.
 sys.path.append('../universal')
 import universal_functions as uf
 # scikit-learn imports.
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.exceptions import ConvergenceWarning, UndefinedMetricWarning
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression, Perceptron
 from sklearn.metrics import classification_report
@@ -97,6 +99,11 @@ def save_model(model, model_filepath):
 
 def main():
     if len(sys.argv) == 3:
+        warnings.filterwarnings(action = 'ignore', 
+                                category = ConvergenceWarning)
+        warnings.filterwarnings(action = 'ignore', 
+                                category = UndefinedMetricWarning)
+        
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y, Y_labels = load_data(database_filepath)
