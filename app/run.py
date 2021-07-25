@@ -19,20 +19,6 @@ from plotly.graph_objs import Bar
 
 app = Flask(__name__)
 
-def title(string):
-    """Convert provided string to title case.
-    """
-    string = re.sub('_', ' ', string) # Replace every underscore with a space.
-    string = string.title()
-    
-    return string
-
-def get_count(category):
-    """Get count of messages which fit into the provided category."""
-    count = df.groupby(category).count().loc[1]['message']
-    
-    return count
-
 conn = sql.connect('../data/DisasterResponse.db')
 # Get main messages data.
 df = pd.read_sql_query('SELECT * FROM categorized_messages', conn)
@@ -41,9 +27,11 @@ df.drop('index', axis = 1, inplace = True)
 most_common_words = pd.read_sql_query('SELECT * FROM most_common_words', conn)
 conn.close()
 
-# Get category labels and convert them to title case.
-cat_names = [title(category) for category in df.columns[5:]]
-messages_per_category = [get_count(category) for category in df.columns[5:]]
+# Create list of category names and the amount of messages in each.
+dummy_columns = df.columns[5:]
+
+cat_names = list(map(lambda txt : re.sub('_', ' ', txt).title(), dummy_columns))
+messages_per_category = list(map(lambda cat : df[cat].sum(), dummy_columns))
 
 # Load model.
 model = joblib.load("../models/classifier.pkl")
@@ -71,7 +59,8 @@ def index():
     cat_count_labels = list(np.arange(0, 10))
     
     most_common_word_counts = most_common_words['sum']
-    most_common_word_labels = [title(word) for word in most_common_words['index']]
+    most_common_word_labels = list(map(lambda txt : txt.title(), 
+                                       most_common_words['index']))
     # Create visuals.
     graphs = [
         {
