@@ -33,3 +33,13 @@ To train the classifier you do much the same thing. First changer directory to t
 To run the web app you again need to change your working directory this time to be out fuller. He done so then run run.pi. This cryptic so only one argument the name of the classifier that you trained previously. You can then connect to the web up through the port 3001.
 
 Once in the web app you will be met by a grid. Containing the names of each of the 35 categories. On the left there will be. A. Text box in which you can enter message you would like to classify. Once classified any category into which the message fits will be highlighted green. Once classified any category into which the message fits will be highlighted green. Lastly you'll see to me visualisations below the main interface which if I've done my job right should be self explanatory.
+
+# Dependencies
+- [Python](https://www.python.org/)
+- [NumPy](https://pypi.org/project/numpy/): Package for array computing with Python.
+- [Pandas](https://pypi.org/project/pandas/): Python package that provides fast, flexible, and expressive data structures.
+- [Plotly](https://pypi.org/project/plotly/): An open-source, interactive data visualization library for Python.
+- [Natural Language Toolkit](https://pypi.org/project/nltk/): Python package for natural language processing.
+- [scikit-learn](https://pypi.org/project/scikit-learn/): A set of python modules for machine learning and data mining.
+- [Flask](https://pypi.org/project/Flask/): A simple framework for building complex web applications.
+- [Bootstrap](https://getbootstrap.com/): The most popular framework for building responsive, mobile-first sites.
