@@ -17,9 +17,16 @@ from plotly.graph_objs import Bar
 
 # Note that some imports are made solely to accomodate the model.
 
+# Get arguments if provided.
+if len(sys.argv) == 3:
+    db_path, c_path = sys.argv[1:]
+else:
+    db_path = '../data/DisasterResponse.db'
+    c_path = '../models/classifier.pkl'
+
 app = Flask(__name__)
 
-conn = sql.connect('../data/DisasterResponse.db')
+conn = sql.connect(db_path)
 # Get main messages data.
 df = pd.read_sql_query('SELECT * FROM categorized_messages', conn)
 df.set_index('index', inplace = True)
@@ -35,7 +42,7 @@ cat_names = list(map(lambda txt : re.sub('_', ' ', txt).title(), dummy_columns))
 messages_per_category = list(map(lambda cat : df[cat].sum(), dummy_columns))
 
 # Load model.
-model = joblib.load("../models/classifier.pkl")
+model = joblib.load(c_path)
 
 # Index webpage displays cool visuals and receives user input text for model.
 @app.route('/')

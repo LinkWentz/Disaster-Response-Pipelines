@@ -31,7 +31,7 @@ The general order of operations for using this project should be the first: proc
 ```
 python process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db # Process the data.
 python train_classifier.py ../data/DisasterResponse.db classifier.pkl                    # Train the classifier.
-python run.py classifier.pkl                                                             # Run the web app.
+python run.py classifier.pkl ../data/DisasterResponse.db ../models/classifier.pkl        # Run the web app.
 ```
 
 You can then connect to the web app through the port 3001. Once in the web app you will be met by a grid containing the names of each of the 35 categories. On the left there will be a text box in which you can enter a message you would like to classify. Once classified any category into which the message fits will be highlighted in green. Lastly you'll see two visualisations below the main interface which, if I've done my job right, should be self explanatory.
