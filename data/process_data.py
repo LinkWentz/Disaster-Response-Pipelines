@@ -18,7 +18,7 @@ os.chdir(cwd)
 from sklearn.feature_extraction.text import CountVectorizer
 
 def condense_category_string(category_string, cat_sep = ';', val_sep = '-'):
-    """Take a string like this:
+    """Take a string like 2this:
         'alpha-0;beta-1;charlie-0;delta-1'
     and convert it to this:
         'beta;delta'
@@ -60,11 +60,18 @@ def clean_data(df):
     dataframe, add a column representing the number of categories assigned to
     each message, and drop duplicate messages.
     """
+    # Initialize all categories using temporary entry to preserve categories
+    # with no values.
+    initializer = df.loc[0].copy()
+    initializer['categories'] = re.sub('0', '1', initializer['categories'])
+    df = df.append(initializer)
     # Dummy-ify categories.
     df['categories'] = list(map(condense_category_string, df['categories']))
     dummy_categories = df.categories.str.get_dummies(sep = ';')
     df = pd.concat([df[df.columns[:5]], dummy_categories], axis = 1)
     df = df.drop('categories', axis = 1)
+    # Remove temporary entry
+    df = df[:df.shape[0] - 1]
     # Make list of all categories.
     dummy_columns = list(df.columns)[4:]
     # Since the duplicates are removed by message this sorting ensures that the
