@@ -7,8 +7,13 @@ import re
 import sqlite3 as sql
 import sys
 # Custom imports.
+cwd = os.getcwd()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append('../universal')
 import universal_functions as uf
+
+os.chdir(cwd)
 # scikit-learn imports.
 from sklearn.feature_extraction.text import CountVectorizer
 

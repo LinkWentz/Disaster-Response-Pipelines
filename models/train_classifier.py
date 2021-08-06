@@ -1,5 +1,6 @@
 # Imports.
 import numpy as np
+import os
 import pandas as pd
 import pickle
 import re
@@ -7,8 +8,13 @@ import sqlite3 as sql
 import sys
 import warnings
 # Custom imports.
+cwd = os.getcwd()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append('../universal')
 import universal_functions as uf
+
+os.chdir(cwd)
 # scikit-learn imports.
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.exceptions import ConvergenceWarning, UndefinedMetricWarning

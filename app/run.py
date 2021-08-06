@@ -2,14 +2,20 @@
 import joblib
 import json
 import numpy as np
+import os
 import pandas as pd
 import plotly
 import re
 import sqlite3 as sql
 import sys
 # Custom imports.
+cwd = os.getcwd()
+
+os.chdir(os.path.dirname(os.path.realpath(__file__)))
 sys.path.append('../universal')
 import universal_functions as uf
+
+os.chdir(cwd)
 # Flask imports.
 from flask import Flask, render_template, request, jsonify
 # Plotly imports.
@@ -23,6 +29,9 @@ if len(sys.argv) == 3:
 else:
     db_path = '../data/DisasterResponse.db'
     c_path = '../models/classifier.pkl'
+
+print(sys.path.dirname(sys.argv[0]))
+print(os.path)
 
 app = Flask(__name__)
 
