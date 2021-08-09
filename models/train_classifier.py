@@ -17,7 +17,8 @@ import universal_functions as uf
 os.chdir(cwd)
 # scikit-learn imports.
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.exceptions import ConvergenceWarning, UndefinedMetricWarning
+from sklearn.exceptions import ConvergenceWarning, UndefinedMetricWarning,\
+                               FitFailedWarning
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression, Perceptron
 from sklearn.metrics import classification_report
@@ -28,7 +29,7 @@ from sklearn.svm import LinearSVC
 
 def load_data(database_filepath):
     """Load categorized_messages table from provided database and return X and Y
-    matrices as well as the labels for the Y matrix.
+    dataframes.
     
     args:
         database_filepath - location of the sql database from which to pull 
@@ -40,11 +41,10 @@ def load_data(database_filepath):
     conn.close()
     df.drop('index', axis = 1, inplace = True)
     # Unpack data.
-    X = np.array(df['message'])
-    Y = np.array(df[df.columns[5:]])
-    Y_labels = df.columns[5:]
+    X = df['message']
+    Y = df[df.columns[5:]]
     
-    return X, Y, Y_labels
+    return X, Y
 
 def build_model():
     """Construct a GridSearchCV model which can be fit to a multi output
@@ -79,18 +79,17 @@ def build_model():
     
     return cv_model
 
-def evaluate_model(model, X_test, Y_test, Y_labels = None):
+def evaluate_model(model, X_test, Y_test):
     """Evaluate the precision, recall, f1, and support of the provided model.
     
     args:
         model - trained sklearn classifier to be evaluated.
         X_test - test data the classifier will predict on.
-        Y-test - correct labels to which the predictions will be compared.
     """
     # Generate predictions.
     preds = model.predict(X_test)
     # Score predictions.
-    report = classification_report(Y_test, preds, target_names = Y_labels)
+    report = classification_report(Y_test, preds, target_names = Y_test.columns)
     # Output results.
     print(report)
 
@@ -105,14 +104,14 @@ def save_model(model, model_filepath):
 
 def main():
     if len(sys.argv) == 3:
-        warnings.filterwarnings(action = 'ignore', 
-                                category = ConvergenceWarning)
-        warnings.filterwarnings(action = 'ignore', 
-                                category = UndefinedMetricWarning)
+        warning_types = [ConvergenceWarning, UndefinedMetricWarning, \
+                         FitFailedWarning]
+        for warning in warning_types:
+            warnings.filterwarnings(action = 'ignore', category = warning)
         
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
-        X, Y, Y_labels = load_data(database_filepath)
+        X, Y = load_data(database_filepath)
         X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
         
         print('Building model...')
@@ -122,7 +121,7 @@ def main():
         model.fit(X_train, Y_train)
         
         print('Evaluating model...')
-        evaluate_model(model, X_test, Y_test, Y_labels)
+        evaluate_model(model, X_test, Y_test)
 
         print('Saving model...\n    MODEL: {}'.format(model_filepath))
         save_model(model, model_filepath)
