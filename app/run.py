@@ -65,7 +65,7 @@ def index():
     # Reshape list into table.
     category_table = []
     cats_per_row = 3
-    for i in np.arange(0, 36, cats_per_row):
+    for i in np.arange(0, len(cat_values), cats_per_row):
         category_table.append(category_dicts[i:i+cats_per_row])
 
     # Extract data needed for visuals.
