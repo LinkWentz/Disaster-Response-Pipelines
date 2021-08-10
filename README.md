@@ -1,7 +1,7 @@
 # Disaster Response Pipelines
 This project was made in an effort to classify messages sent during disasters in order to direct those messages to the appropriate response agencies.
 
-This project consists of 2 pipelines and a web app. The first pipeline processes data from Figure Eight containing messages and associated categories, and saves that data to an SQL database. The second pipeline builds a model which assigns any combination of 35 categories to a given message. The web app allows you to interface with the model, giving you the ability to input a message which the model will then categorize. The web app also features some information about the data set which should help you to write your messages.
+This project consists of 2 pipelines and a web app. The first pipeline processes data from Figure Eight containing messages and associated categories, and saves that data to an SQL database. The second pipeline builds a model which assigns any combination of 36 categories to a given message. The web app allows you to interface with the model, giving you the ability to input a message which the model will then categorize. The web app also features some information about the data set which should help you to write your messages.
 
 ### File Structure
 ```
@@ -34,7 +34,7 @@ python train_classifier.py ../data/DisasterResponse.db classifier.pkl           
 python run.py classifier.pkl ../data/DisasterResponse.db ../models/classifier.pkl        # Run the web app.
 ```
 
-You can then connect to the web app through the port 3001. Once in the web app you will be met by a grid containing the names of each of the 35 categories. On the left there will be a text box in which you can enter a message you would like to classify. Once classified any category into which the message fits will be highlighted in green. Lastly you'll see two visualisations below the main interface which, if I've done my job right, should be self explanatory.
+You can then connect to the web app through the port 3001. Once in the web app you will be met by a grid containing the names of each of the 36 categories. On the left there will be a text box in which you can enter a message you would like to classify. Once classified any category into which the message fits will be highlighted in green. Lastly you'll see two visualisations below the main interface which, if I've done my job right, should be self explanatory.
 
 ### Sources
 [Appen](https://appen.com/): I got this data from Figure Eight through Udacity. Figure Eight has since been aquired by Appen and their URL now redirects to Appen so that is probably where they'd like me to send you now.
