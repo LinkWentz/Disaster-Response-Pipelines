@@ -17,15 +17,15 @@ import universal_functions as uf
 os.chdir(cwd)
 # scikit-learn imports.
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.exceptions import ConvergenceWarning, UndefinedMetricWarning,\
-                               FitFailedWarning
+from sklearn.exceptions import ConvergenceWarning, UndefinedMetricWarning
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.linear_model import LogisticRegression, Perceptron
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.linear_model import RidgeClassifierCV
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.multioutput import MultiOutputClassifier
+from sklearn.naive_bayes import MultinomialNB
 from sklearn.pipeline import Pipeline
-from sklearn.svm import LinearSVC
 
 def load_data(database_filepath):
     """Load categorized_messages table from provided database and return X and Y
@@ -53,26 +53,15 @@ def build_model():
     # Define base pipeline.
     pipeline = Pipeline([
         ('feature_extraction', TfidfVectorizer(tokenizer = uf.tokenize)),
-        ('classifier', MultiOutputClassifier(LogisticRegression()))
+        ('classifier', MultinomialNB())
     ])
     
     param_grid = [
-        {'classifier__estimator__fit_intercept': [False, True],
-         'classifier__estimator__penalty': ['l2'],
-         'classifier__estimator__solver': ['sag', 'saga'],
-         'classifier__estimator__max_iter': [1000, 2000, 3000],
-         'classifier': [MultiOutputClassifier(LogisticRegression())]},
-        {'classifier__estimator__penalty': ['l2'],
-         'classifier__estimator__loss': ['hinge', 'squared_hinge'],
-         'classifier__estimator__C': [1, 2],
-         'classifier__estimator__multi_class': ['ovr', 'crammer_singer'],
-         'classifier__estimator__fit_intercept': [True, False],
-         'classifier': [MultiOutputClassifier(LinearSVC())]},
-        {'classifier__estimator__fit_intercept': [True, False],
-         'classifier__estimator__early_stopping': [True],
-         'classifier__estimator__max_iter': [1000, 2000, 3000],
-         'classifier__estimator__penalty': ['l2'],
-         'classifier': [MultiOutputClassifier(Perceptron())]}
+        {'classifier__estimator__criterion': ['gini', 'entropy'],
+         'classifier__estimator__max_depth': [None, 1000, 2000],
+         'classifier__estimator__max_features': ['auto', 'sqrt', 'log2'],
+         'classifier': [MultiOutputClassifier(DecisionTreeClassifier())]},
+        {'classifier': [MultiOutputClassifier(MultinomialNB())]}
     ]
     
     cv_model = GridSearchCV(pipeline, param_grid)
@@ -104,8 +93,7 @@ def save_model(model, model_filepath):
 
 def main():
     if len(sys.argv) == 3:
-        warning_types = [ConvergenceWarning, UndefinedMetricWarning, \
-                         FitFailedWarning]
+        warning_types = [ConvergenceWarning, UndefinedMetricWarning]
         for warning in warning_types:
             warnings.filterwarnings(action = 'ignore', category = warning)
         
