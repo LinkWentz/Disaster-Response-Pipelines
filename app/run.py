@@ -30,9 +30,6 @@ else:
     db_path = '../data/DisasterResponse.db'
     c_path = '../models/classifier.pkl'
 
-print(sys.path.dirname(sys.argv[0]))
-print(os.path)
-
 app = Flask(__name__)
 
 conn = sql.connect(db_path)
