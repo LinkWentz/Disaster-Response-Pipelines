@@ -73,7 +73,7 @@ def index():
     cat_count_labels = list(np.arange(0, 10))
     
     most_common_word_counts = most_common_words['sum']
-    most_common_word_labels = list(map(lambda txt : txt.title(), 
+    most_common_word_labels = list(map(lambda txt : txt.title() + '-', 
                                        most_common_words.index))
     # Create visuals.
     graphs = [
