@@ -17,12 +17,12 @@ This project consists of 2 pipelines and a web app. The first pipeline processes
 │   ├── disaster_categories.csv
 │   ├── disaster_messages.csv
 │   └── process_data.py
-├── screenshots
-│   ├── Classified Message.jpg
-│   └── Home Page.jpg
 ├── models
 │   ├── classifier.pkl
 │   └── train_classifier.py
+├── screenshots
+│   ├── Classified Message.jpg
+│   └── Home Page.jpg
 ├── universal
 │   └── universal_functions.py
 └── README.md
