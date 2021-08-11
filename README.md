@@ -17,10 +17,13 @@ This project consists of 2 pipelines and a web app. The first pipeline processes
 │   ├── disaster_categories.csv
 │   ├── disaster_messages.csv
 │   └── process_data.py
+├── screenshots
+│   ├── Classified Message.jpg
+│   └── Home Page.jpg
 ├── models
 │   ├── classifier.pkl
 │   └── train_classifier.py
-├── models
+├── universal
 │   └── universal_functions.py
 └── README.md
 ```
@@ -34,7 +37,15 @@ python train_classifier.py ../data/DisasterResponse.db classifier.pkl           
 python run.py ../data/DisasterResponse.db ../models/classifier.pkl                       # Run the web app.
 ```
 
-You can then connect to the web app through the port 3001. Once in the web app you will be met by a grid containing the names of each of the 36 categories. On the left there will be a text box in which you can enter a message you would like to classify. Once classified any category into which the message fits will be highlighted in green. Lastly you'll see two visualisations below the main interface which, if I've done my job right, should be self explanatory.
+You can then connect to the web app through the port 3001. Once in the web app you will be met by a grid containing the names of each of the 36 categories. On the left there will be a text box in which you can enter a message you would like to classify. This should be what you see when you first open the web app:
+
+![Home Page](https://github.com/LinkWentz/Disaster-Response-Pipelines/blob/master/screenshots/Home%20Page.jpg)
+
+Once classified any category into which the message fits will be highlighted in green. This is what it will look like once you've classified a message (results may vary):
+
+![Classified Message](https://github.com/LinkWentz/Disaster-Response-Pipelines/blob/master/screenshots/Classified%20Message.jpg)
+
+Lastly you'll see two visualisations below the main interface which, if I've done my job right, should be self explanatory.
 
 ### How it works
 Now that we have a brief overview of the pipeline, let's look at each step in detail. First we'll discuss the data processing step.
