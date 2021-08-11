@@ -86,7 +86,7 @@ def index():
             ],
 
             'layout': {
-                'title': 'Messages by Category Count',
+                'title': 'Messages by Amount of Categories',
                 'yaxis': {
                     'title': ''
                 },
@@ -104,7 +104,7 @@ def index():
             ],
 
             'layout': {
-                'title': 'Messages by Amount of Categories',
+                'title': 'Most Commonly Used Words',
                 'yaxis': {
                     'categoryorder':'total ascending'
                 },
