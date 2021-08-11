@@ -104,7 +104,7 @@ def index():
             ],
 
             'layout': {
-                'title': 'Most Common Words',
+                'title': 'Messages by Amount of Categories',
                 'yaxis': {
                     'categoryorder':'total ascending'
                 },

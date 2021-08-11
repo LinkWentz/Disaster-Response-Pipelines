@@ -44,7 +44,7 @@
             </div>
             <div class="col-6">
                 <h3 class="text-center">Result</h3>
-                <h6 class="text-center text-muted font-italic font-weight-light">Hover over a category to see the amount of messages with which it is associated</h6>
+                <h6 class="text-center text-muted font-italic font-weight-light">Hover over a category to see the amount of messages in the training data it describes</h6>
                 <table class="text-center outline">
                     <tbody>
                         {% for row in category_table %}
@@ -74,6 +74,7 @@
         </div>
         <hr />
         <div class="container">
+            <h3 class="text-center">Visualizations of the Training Data</h3>
             <div class="row">
                 <div class="col-6">
                     <div id="{{ids[0]}}" class="d-flex align-items-center justify-content-center"></div>
