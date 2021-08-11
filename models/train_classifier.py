@@ -17,14 +17,16 @@ import universal_functions as uf
 os.chdir(cwd)
 # scikit-learn imports.
 from sklearn.base import BaseEstimator, TransformerMixin
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.exceptions import ConvergenceWarning, UndefinedMetricWarning
 from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.tree import DecisionTreeClassifier
+from sklearn.tree import DecisionTreeClassifier, ExtraTreeClassifier
 from sklearn.linear_model import RidgeClassifierCV
 from sklearn.metrics import classification_report
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.multioutput import MultiOutputClassifier
 from sklearn.naive_bayes import MultinomialNB
+from sklearn.neighbors import KNeighborsClassifier
 from sklearn.pipeline import Pipeline
 
 def load_data(database_filepath):
@@ -57,14 +59,19 @@ def build_model():
     ])
     
     param_grid = [
-        {'classifier__estimator__criterion': ['gini', 'entropy'],
-         'classifier__estimator__max_depth': [None, 1000, 2000],
-         'classifier__estimator__max_features': ['auto', 'sqrt', 'log2'],
-         'classifier': [MultiOutputClassifier(DecisionTreeClassifier())]},
-        {'classifier': [MultiOutputClassifier(MultinomialNB())]}
+        {'classifier__estimator__alpha': [1, 2],
+         'classifier': [MultiOutputClassifier(MultinomialNB())]},
+        {'classifier__n_estimators': [50, 100, 200],
+         'classifier__max_features': ['auto', 'sqrt', 'log2'],
+         'classifier__bootstrap': [True, False],
+         'classifier': [RandomForestClassifier()]},
+        {'classifier__weights': ['uniform', 'distance'],
+         'classifier': [KNeighborsClassifier()]},
+        {'classifier__criterion': ['gini', 'entropy'],
+         'classifier': [ExtraTreesClassifier()]}
     ]
     
-    cv_model = GridSearchCV(pipeline, param_grid)
+    cv_model = GridSearchCV(pipeline, param_grid, verbose=10)
     
     return cv_model
 
