@@ -46,7 +46,7 @@ Once the data is processed it can then be used to train the classifier. The data
 Now that the classifier is trained, the backend of the web app is complete, and the web app can be run. The main feature of the web app (the ability to classify messages), uses the pickled classifier to predict the categorization of the provided messages. As for the visualizations, the first (representing the amount of messages that had 0, 1, 2... etc. categories attributed to them) was made by simply summing the features for each row. The second visualization uses the most common words table that was made in the data processing step.
 
 ### Sources
-[Appen](https://appen.com/): I got this data from Figure Eight through Udacity. Figure Eight has since been aquired by Appen and their URL now redirects to Appen so that is probably where they'd like me to send you now.
+- [Appen](https://appen.com/): I got this data from Figure Eight through Udacity. Figure Eight has since been aquired by Appen and their URL now redirects to Appen so that is probably where they'd like me to send you now.
 
 ### Dependencies
 - [NumPy](https://pypi.org/project/numpy/): Package for array computing with Python.
