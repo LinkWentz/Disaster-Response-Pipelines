@@ -55,23 +55,25 @@ def build_model():
     # Define base pipeline.
     pipeline = Pipeline([
         ('feature_extraction', TfidfVectorizer(tokenizer = uf.tokenize)),
-        ('classifier', MultinomialNB())
+        ('classifier', RandomForestClassifier())
     ])
     
     param_grid = [
         {'classifier__estimator__alpha': [1, 2],
          'classifier': [MultiOutputClassifier(MultinomialNB())]},
-        {'classifier__n_estimators': [50, 100, 200],
-         'classifier__max_features': ['auto', 'sqrt', 'log2'],
-         'classifier__bootstrap': [True, False],
+        {'classifier__n_estimators': [16],
+         'classifier__bootstrap': [True],
+         'classifier__min_samples_split': [2, 4],
+         'classifier__ccp_alpha': [0],
+         'classifier__max_depth': [None, 50],
          'classifier': [RandomForestClassifier()]},
-        {'classifier__weights': ['uniform', 'distance'],
-         'classifier': [KNeighborsClassifier()]},
-        {'classifier__criterion': ['gini', 'entropy'],
-         'classifier': [ExtraTreesClassifier()]}
+        {'classifier__weights': ['distance'],
+         'classifier__leaf_size': [15, 30],
+         'classifier__p': [1, 2],
+         'classifier': [KNeighborsClassifier()]}
     ]
     
-    cv_model = GridSearchCV(pipeline, param_grid, verbose=10)
+    cv_model = GridSearchCV(pipeline, param_grid, verbose=2)
     
     return cv_model
 
@@ -107,7 +109,7 @@ def main():
         database_filepath, model_filepath = sys.argv[1:]
         print('Loading data...\n    DATABASE: {}'.format(database_filepath))
         X, Y = load_data(database_filepath)
-        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2)
+        X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3)
         
         print('Building model...')
         model = build_model()
@@ -122,6 +124,7 @@ def main():
         save_model(model, model_filepath)
 
         print('Trained model saved!')
+
     else:
         print('Please provide the filepath of the disaster messages database '\
               'as the first argument and the filepath of the pickle file to '\

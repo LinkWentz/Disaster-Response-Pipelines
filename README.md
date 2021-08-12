@@ -18,7 +18,6 @@ This project consists of 2 pipelines and a web app. The first pipeline processes
 │   ├── disaster_messages.csv
 │   └── process_data.py
 ├── models
-│   ├── classifier.pkl
 │   └── train_classifier.py
 ├── screenshots
 │   ├── Classified Message.jpg
@@ -29,7 +28,7 @@ This project consists of 2 pipelines and a web app. The first pipeline processes
 ```
 
 ### Usage
-The general order of operations for using this project should be the first: process the data, second: train the classifier and third: run the web app. However you can also run the web app without going through the first or the first 2 steps; as I have included a premade database in the data folder and a pretrained classifier in the models folder. The default commands to run these scripts are below, though do note that the script runs relative to your terminal's current working directory.
+The general order of operations for using this project should be the first: process the data, second: train the classifier and third: run the web app. However you can also skip the first step if you so wish, as I have included a premade database in the data folder. The default commands to run these scripts are below, though do note that the script runs relative to your terminal's current working directory.
 
 ```
 python process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db # Process the data.
