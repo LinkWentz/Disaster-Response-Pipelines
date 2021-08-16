@@ -16,29 +16,6 @@ import universal_functions as uf
 
 os.chdir(cwd)
 
-def condense_category_string(category_string, cat_sep = ';', val_sep = '-'):
-    """Take a string like 2this:
-        'alpha-0;beta-1;charlie-0;delta-1'
-    and convert it to this:
-        'beta;delta'
-
-    args:
-        category_string - string formatted as above.
-    optional args:
-        cat_sep - delimiter between category-value pairs.
-            defaults to ';'
-        val_sep - delimiter between category name and value.
-            defaults to '-'
-    """
-    # Seperate categories and their values.
-    category_list = category_string.split(cat_sep)
-    cat_val_pairs = [category.split(val_sep) for category in category_list]
-    # Rejoin all categories with the value '1'.
-    dense_cats = [category for category, value in cat_val_pairs if value == '1']
-    dense_cats_string = cat_sep.join(dense_cats)
-
-    return dense_cats_string
-
 def load_data(messages_filepath, categories_filepath):
     """Load messages and their associated category labels from their csv files
     and merge them into a pandas dataframe.
@@ -53,6 +30,44 @@ def load_data(messages_filepath, categories_filepath):
     messages_and_categories = messages.merge(categories, on = 'id')
 
     return messages_and_categories
+
+def condense_category_string(category_string, cat_sep = ';', val_sep = '-',\
+                             ones = []):
+    """Take a string like this:
+        'alpha-0;beta-1;charlie-2;delta-1'
+    and convert it to this:
+        'beta;delta'
+
+    Any nonbinary category values are converted to 0 by default. To control this
+    behaivior see the optional arguments.
+
+    args:
+        category_string - string formatted as above.
+    optional args:
+        cat_sep - delimiter between category-value pairs.
+            defaults to ';'
+        val_sep - delimiter between category name and value.
+            defaults to '-'
+        ones - iterable of possible nonbinary category values which should be
+        replaced with a 1 instead of a 0.
+            defaults to []
+    """
+    # Make sure all values are strings in replace_with_one argument.
+    ones = set(map(str, ones))
+    # Seperate categories and their values.
+    category_list = category_string.split(cat_sep)
+    cat_val_pairs = [category.split(val_sep) for category in category_list]
+    # Convert any nonbinary values to a pre-specified value or 0.
+    cat_val_pairs = np.array(cat_val_pairs)
+    values = cat_val_pairs[:, 1]
+    values = list(map(lambda x : '1' if x in ones or x == '1' else '0',
+                      values))
+    cat_val_pairs[:, 1] = values
+    # Rejoin all categories with the value '1'.
+    dense_cats = [category for category, value in cat_val_pairs if value == '1']
+    dense_cats_string = cat_sep.join(dense_cats)
+
+    return dense_cats_string
 
 def clean_data(df):
     """Dummy the values in the "categories" column of the provided pandas
