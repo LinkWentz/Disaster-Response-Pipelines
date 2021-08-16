@@ -36,9 +36,11 @@ conn = sql.connect(db_path)
 # Get main messages data.
 df = pd.read_sql_query('SELECT * FROM categorized_messages', conn)
 df.set_index('index', inplace = True)
-# Get most common words table.
+# Get most common words series.
 most_common_words = pd.read_sql_query('SELECT * FROM most_common_words', conn)
 most_common_words.set_index('index', inplace = True)
+most_common_words = most_common_words.iloc[:, 0]
+
 conn.close()
 
 # Create list of category names and the amount of messages in each.
@@ -71,9 +73,8 @@ def index():
     # Extract data needed for visuals.
     cat_count_counts = df.groupby('cat_count').count()['message']
     cat_count_labels = list(np.arange(0, 10))
-    
-    most_common_word_counts = most_common_words['sum']
-    most_common_word_labels = list(map(lambda txt : txt.title() + '-', 
+
+    most_common_word_labels = list(map(lambda txt : txt.title() + '-',
                                        most_common_words.index))
     # Create visuals.
     graphs = [
@@ -97,7 +98,7 @@ def index():
         {
             'data': [
                 Bar(
-                    x = most_common_word_counts,
+                    x = most_common_words,
                     y = most_common_word_labels,
                     orientation='h'
                 )
@@ -113,13 +114,13 @@ def index():
             }
         }
     ]
-    
+
     # Encode plotly graphs in JSON.
     ids = ["graph-{}".format(i) for i, _ in enumerate(graphs)]
     graphJSON = json.dumps(graphs, cls=plotly.utils.PlotlyJSONEncoder)
-    
+
     # Render web page with plotly graphs.
-    return render_template('master.html', ids=ids, query=query, 
+    return render_template('master.html', ids=ids, query=query,
                            graphJSON=graphJSON, category_table=category_table)
 
 def main():
