@@ -31,13 +31,13 @@ This project consists of 2 pipelines and a web app. The first pipeline processes
 The general order of operations for using this project should be the first: process the data, second: train the classifier and third: run the web app. However you can also skip the first step if you so wish, as I have included a premade database in the data folder. Each step should be performed from a terminal instance, first by changing to the appropriate directory for the step, then running the appropriate command. I've provided a guide to what the appropriate directory and command are for each step below.
 
 ```
-result                     |    directory    |    command
+step                       |    directory    |    command
 # Process the data.             ./data            python process_data.py disaster_messages.csv disaster_categories.csv DisasterResponse.db
 # Train the classifier.         ./models          python train_classifier.py ../data/DisasterResponse.db classifier.pkl
 # Run the web app.              ./app             python run.py ../data/DisasterResponse.db ../models/classifier.pkl
 ```
 
-You can then connect to the web app through the address localhost:3001. Once in the web app you will be met by a grid containing the names of each of the 36 categories. On the left there will be a text box in which you can enter a message you would like to classify. This should be what you see when you first open the web app:
+You can then connect to the web app through the address "localhost:3001". Once in the web app you will be met by a grid containing the names of each of the 36 categories. On the left there will be a text box in which you can enter a message you would like to classify. This should be what you see when you first open the web app:
 
 ![Home Page](https://github.com/LinkWentz/Disaster-Response-Pipelines/blob/master/screenshots/Home%20Page.jpg)
 
@@ -54,7 +54,7 @@ The first action taken in the data processing step is to load the data. The data
 
 Once the data is processed it can then be used to train the classifier. The data is first split 80/20 into train and test sets respectively. Then, using cross validation, the best combination of hyperparameters for the best classifier is selected and that model is then exported into a pickle file. Note here that the range of useable classifiers was significantly reduced by the inclusion of features with only one value, specifically the "child_alone" column.
 
-Now that the classifier is trained, the backend of the web app is complete, and the web app can be run. The main feature of the web app (the ability to classify messages) uses the pickled classifier to predict the categorization of the provided messages. As for the visualizations, the first (representing the amount of messages that had 0, 1, 2... etc. categories attributed to them) was made by simply summing the features for each row. The second visualization uses the most common words table that was made in the data processing step.
+Once the classifier is trained, the backend of the web app is complete, and the web app can be run. The main feature of the web app (the ability to classify messages) uses the pickled classifier to predict the categorization of the provided messages. As for the visualizations, the first (representing the amount of messages that had 0, 1, 2... etc. categories attributed to them) was made by simply summing the category values for each message. The second visualization uses the most common words table that was made in the data processing step.
 
 ### Sources
 - [Appen](https://appen.com/): I got this data from Figure Eight through Udacity. Figure Eight has since been acquired by Appen and their URL now redirects to Appen, so that is probably where they'd like me to send you now.
