@@ -61,6 +61,7 @@ Once the classifier is trained, the backend of the web app is complete, and the 
 
 ### Dependencies
 - [NumPy 1.20.2](https://pypi.org/project/numpy/): Package for array computing with Python.
+- [joblib 1.0.1](https://pypi.org/project/joblib/): Package for array computing with Python.
 - [Pandas 1.2.4](https://pypi.org/project/pandas/): Python package that provides fast, flexible, and expressive data structures.
 - [Plotly 4.14.3](https://pypi.org/project/plotly/): An open-source, interactive data visualization library for Python.
 - [Natural Language Toolkit 3.6.2](https://pypi.org/project/nltk/): Python package for natural language processing.
