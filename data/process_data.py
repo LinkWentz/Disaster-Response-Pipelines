@@ -116,7 +116,7 @@ def get_most_common_words(df, count = 20, column_name = 'message'):
     """
     strings = df[column_name].copy()
     # Convert the strings to tokens.
-    token_lists = strings.apply(np.vectorize(uf.tokenize))
+    token_lists = strings.apply(np.vectorize(uf.tokenize, lemmatize = False))
     # Combine every list of tokens into a single series.
     tokens = pd.Series((chain.from_iterable(token_lists)))
     most_common_words = tokens.value_counts(sort = True)

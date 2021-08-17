@@ -6,8 +6,12 @@ from nltk.stem.wordnet import WordNetLemmatizer
 
 stopwords = set(stopwords.words('english'))
 
-def tokenize(string):
+def tokenize(string, lemmatize = True):
     """Return an iterable of clean tokens made from the provided string.
+
+    optional args:
+        lemmatize - boolean determining whether the tokens should be lemmatized
+            defaults to True
     """
     # Normalize string.
     string = string.lower()
@@ -23,5 +27,8 @@ def tokenize(string):
     # Tokenize string.
     tokens = string.split(' ')
     tokens = [word for word in tokens if word not in stopwords]
+    # Lemmatize tokens.
+    lem = WordNetLemmatizer()
+    tokens = [lem.lemmatize(word) for word in tokens]
 
     return tokens
