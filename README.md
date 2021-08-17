@@ -23,7 +23,7 @@ This project consists of 2 pipelines and a web app. The first pipeline processes
 │   ├── Classified Message.jpg
 │   └── Home Page.jpg
 ├── universal
-│   └── universal_functions.py
+|   └── universal_functions.py
 └── README.md
 ```
 
@@ -45,7 +45,7 @@ Once classified any category into which the message fits will be highlighted in 
 
 ![Classified Message](https://github.com/LinkWentz/Disaster-Response-Pipelines/blob/master/screenshots/Classified%20Message.jpg)
 
-Lastly you'll see two visualizations below the main interface which, if I've done my job right, should be self explanatory.
+Lastly you'll see two visualizations below the main interface which, if I've done my job right, should be self explanatory. If you have trouble getting this project to work, first verify that your environment has all the necessary dependencies.
 
 ### How it works
 Now that we have a brief overview of the pipeline, let's look at each step in detail. First we'll discuss the data processing step.
@@ -60,10 +60,10 @@ Now that the classifier is trained, the backend of the web app is complete, and 
 - [Appen](https://appen.com/): I got this data from Figure Eight through Udacity. Figure Eight has since been acquired by Appen and their URL now redirects to Appen, so that is probably where they'd like me to send you now.
 
 ### Dependencies
-- [NumPy](https://pypi.org/project/numpy/): Package for array computing with Python.
-- [Pandas](https://pypi.org/project/pandas/): Python package that provides fast, flexible, and expressive data structures.
-- [Plotly](https://pypi.org/project/plotly/): An open-source, interactive data visualization library for Python.
-- [Natural Language Toolkit](https://pypi.org/project/nltk/): Python package for natural language processing.
-- [scikit-learn](https://pypi.org/project/scikit-learn/): A set of python modules for machine learning and data mining.
-- [Flask](https://pypi.org/project/Flask/): A simple framework for building complex web applications.
-- [Bootstrap](https://getbootstrap.com/): The most popular framework for building responsive, mobile-first sites.
+- [NumPy 1.20.2](https://pypi.org/project/numpy/): Package for array computing with Python.
+- [Pandas 1.2.4](https://pypi.org/project/pandas/): Python package that provides fast, flexible, and expressive data structures.
+- [Plotly 4.14.3](https://pypi.org/project/plotly/): An open-source, interactive data visualization library for Python.
+- [Natural Language Toolkit 3.6.2](https://pypi.org/project/nltk/): Python package for natural language processing.
+- [scikit-learn 0.24.2](https://pypi.org/project/scikit-learn/): A set of python modules for machine learning and data mining.
+- [Flask 1.1.2](https://pypi.org/project/Flask/): A simple framework for building complex web applications.
+- [Bootstrap 4.3.1](https://getbootstrap.com/): The most popular framework for building responsive, mobile-first sites.
